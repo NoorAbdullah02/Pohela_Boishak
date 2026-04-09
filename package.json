@@ -6,7 +6,7 @@
   "scripts": {
     "install:all": "npm install && npm install --prefix client && npm install --prefix server",
     "db:setup": "node scripts/db-setup.js",
-    "build": "npm run install:all && npm run build --prefix client && npm run db:setup",
+    "build": "npm run install:all && rm -rf client/out client/.next && npm run build --prefix client && npm run db:setup",
     "start": "npm start --prefix server",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\""
   },

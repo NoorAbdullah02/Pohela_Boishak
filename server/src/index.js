@@ -54,9 +54,25 @@ app.use('/api/auth', authRoutes);
 app.use('/api/food', foodRoutes);
 app.use('/api/orders', orderRoutes);
 
-// Serve static files from the Next.js export with .html extension support
+// Serve static files from the Next.js export
 const clientOutPath = join(__dirname, '../../client/out');
-app.use(express.static(clientOutPath, { extensions: ['html', 'txt', 'svg', 'ico'] }));
+
+// Middleware to log file requests (helpful for debugging 404s on Render)
+app.use((req, res, next) => {
+  if (req.url.startsWith('/_next/') || req.url.endsWith('.js') || req.url.endsWith('.css')) {
+    console.log(`📡 Requesting static asset: ${req.url}`);
+  }
+  next();
+});
+
+app.use(express.static(clientOutPath, {
+  extensions: ['html', 'txt', 'svg', 'ico'],
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.set('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'শুভ নববর্ষ! সার্ভার চালু আছে। 🎉' });
