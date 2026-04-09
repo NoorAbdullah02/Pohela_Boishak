@@ -161,7 +161,7 @@ export default function FoodCard({ item, index }) {
         <div className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col justify-between relative z-10 bg-[#0a0a16]/90">
           <div>
             <div className="flex justify-between items-start gap-2 sm:gap-3 mb-2 sm:mb-3">
-              <h3 className="text-base sm:text-lg md:text-xl font-black text-white leading-tight line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-300 group-hover:to-orange-500 transition-all duration-300 drop-shadow-md pr-2 pl-1.5">
+            <h3 className="text-sm xs:text-base sm:text-lg md:text-xl font-black text-white leading-tight line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-300 group-hover:to-orange-500 transition-all duration-300 drop-shadow-md pr-2 pl-1.5 min-h-[40px] flex items-center">
                 {item.name}
               </h3>
               <div className="relative group/price flex-shrink-0 mt-1">
@@ -175,7 +175,7 @@ export default function FoodCard({ item, index }) {
               </div>
             </div>
 
-            <p className="text-gray-400/90 text-xs sm:text-sm line-clamp-2 leading-relaxed min-h-[36px] sm:min-h-[40px] font-medium tracking-wide pr-2 pl-1.5">
+            <p className="text-gray-400/90 text-[10px] xs:text-xs sm:text-sm line-clamp-2 leading-relaxed min-h-[36px] sm:min-h-[40px] font-medium tracking-wide pr-2 pl-1.5 mt-1 sm:mt-2">
               {item.description}
             </p>
 
@@ -199,7 +199,7 @@ export default function FoodCard({ item, index }) {
             disabled={!item.in_stock}
             onClick={handleAdd}
             id={`add-to-cart-${item.id}`}
-            className={`w-full mt-4 sm:mt-6 mb-1 relative overflow-hidden group/btn rounded-xl sm:rounded-2xl p-[1px] transition-all duration-300 min-h-[44px] ${item.in_stock
+            className={`w-full mt-4 sm:mt-6 mb-1 relative overflow-hidden group/btn rounded-xl sm:rounded-2xl p-[1px] transition-all duration-300 min-h-[48px] sm:min-h-[56px] ${item.in_stock
               ? "shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_10px_30px_rgba(245,158,11,0.3)]"
               : "opacity-60 cursor-not-allowed"
               }`}
@@ -207,12 +207,12 @@ export default function FoodCard({ item, index }) {
             {item.in_stock && (
               <span className="absolute inset-0 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-70 group-hover/btn:opacity-100 group-hover/btn:animate-gradient rotate-180 transition-opacity" />
             )}
-            <div className={`relative h-full w-full px-3 sm:px-4 py-2 sm:py-3 rounded-[10px] sm:rounded-[15px] flex items-center justify-center gap-1 sm:gap-2 transition-all duration-300 ${item.in_stock ? 'bg-[#151525] group-hover/btn:bg-transparent' : 'bg-gray-800'}`}>
-              <span className={`font-bold text-xs sm:text-sm tracking-wide transition-colors`}>
+            <div className={`relative h-full w-full px-3 sm:px-4 py-2 sm:py-3.5 rounded-[10px] sm:rounded-[15px] flex items-center justify-center gap-1 sm:gap-2 transition-all duration-300 ${item.in_stock ? 'bg-[#151525] group-hover/btn:bg-transparent' : 'bg-gray-800'}`}>
+              <span className={`font-bold text-xs sm:text-sm md:text-base tracking-wide transition-colors`}>
                 {item.in_stock ? "কার্টে যোগ করুন" : "স্টক শেষ"}
               </span>
               {item.in_stock && (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 group-hover/btn:text-white transition-colors group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5 transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-amber-500 group-hover/btn:text-white transition-colors group-hover/btn:translate-x-1 group-hover/btn:-translate-y-0.5 transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                 </svg>
               )}

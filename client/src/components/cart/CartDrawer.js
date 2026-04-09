@@ -35,7 +35,7 @@ export default function CartDrawer() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-96 sm:max-w-lg bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-l border-white/10 z-[70] flex flex-col shadow-2xl overflow-hidden will-change-transform"
+              className="fixed top-0 right-0 bottom-0 w-[92%] xs:w-full max-w-sm sm:max-w-md md:max-w-lg bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-l border-white/10 z-[70] flex flex-col shadow-2xl overflow-hidden will-change-transform"
             >
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-5">
@@ -64,14 +64,14 @@ export default function CartDrawer() {
                       <span className="text-xl sm:text-2xl">🛒</span>
                     </div>
                     <div className="min-w-0">
-                      <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 tracking-tight truncate">
+                      <h2 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 tracking-tight truncate">
                         আপনার কার্ট
                       </h2>
                       <motion.p
                         key={items.length}
                         initial={{ scale: 1.2, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="text-xs sm:text-sm text-gray-400 font-medium mt-0.5 sm:mt-1"
+                        className="text-[10px] xs:text-xs sm:text-sm text-gray-400 font-medium mt-0.5 sm:mt-1"
                       >
                         {items.length === 0 ? "খালি" : `${items.length}টি আইটেম`}
                       </motion.p>
@@ -142,7 +142,7 @@ export default function CartDrawer() {
                           {/* Image */}
                           <motion.div
                             whileHover={{ scale: 1.05 }}
-                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl flex-shrink-0 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 shadow-lg flex items-center justify-center text-3xl sm:text-4xl"
+                            className="w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 rounded-xl flex-shrink-0 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 shadow-lg flex items-center justify-center text-2xl xs:text-3xl sm:text-4xl"
                           >
                             {item.image_url ? (
                               <img
@@ -181,17 +181,17 @@ export default function CartDrawer() {
                               <motion.button
                                 whileTap={{ scale: 0.85 }}
                                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-colors font-bold text-lg"
+                                className="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-colors font-bold text-base xs:text-lg"
                               >
                                 −
                               </motion.button>
-                              <span className="text-white font-bold text-sm sm:text-base min-w-8 text-center tabular-nums">
+                              <span className="text-white font-bold text-xs xs:text-sm sm:text-base min-w-8 text-center tabular-nums">
                                 {item.quantity}
                               </span>
                               <motion.button
                                 whileTap={{ scale: 0.85 }}
                                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-colors font-bold text-lg"
+                                className="w-8 h-8 xs:w-9 xs:h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-colors font-bold text-base xs:text-lg"
                               >
                                 +
                               </motion.button>

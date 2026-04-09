@@ -74,17 +74,17 @@ export default function MenuSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 md:gap-4 mb-8 sm:mb-12 pb-4 sm:pb-6"
+        className="flex overflow-x-auto hide-scrollbar items-center sm:justify-center gap-2 sm:gap-3 md:gap-4 mb-8 sm:mb-12 pb-4 sm:pb-6 -mx-4 px-4 sm:mx-0 sm:px-0"
       >
         {categories.map((cat) => (
           <button
             key={cat}
             id={`category-${cat}`}
             onClick={() => setActiveCategory(cat)}
-            className={`category-chip flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm md:text-base ${activeCategory === cat ? "active" : ""
+            className={`category-chip flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm md:text-base whitespace-nowrap px-4 py-2 sm:px-6 sm:py-2.5 ${activeCategory === cat ? "active" : ""
               }`}
           >
-            <span>{categoryIcons[cat]}</span>
+            <span className="text-sm sm:text-base">{categoryIcons[cat]}</span>
             <span>{cat}</span>
             {activeCategory !== cat && (
               <span className="text-xs text-gray-500 ml-0.5">
@@ -125,7 +125,7 @@ export default function MenuSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8"
             >
               {filteredItems.map((item, index) => (
                 <FoodCard key={item.id} item={item} index={index} />

@@ -268,7 +268,27 @@ export default function HeroScene() {
         camera={{ position: [0, 0, 8], fov: 55 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 2]}
-        style={{ background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)" }}
+        style={{
+          background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)",
+        }}
+        onCreated={({ camera }) => {
+          const handleResize = () => {
+            if (window.innerWidth < 640) {
+              camera.fov = 75;
+              camera.position.z = 10;
+            } else if (window.innerWidth < 1024) {
+              camera.fov = 65;
+              camera.position.z = 9;
+            } else {
+              camera.fov = 55;
+              camera.position.z = 8;
+            }
+            camera.updateProjectionMatrix();
+          };
+          window.addEventListener("resize", handleResize);
+          handleResize();
+          return () => window.removeEventListener("resize", handleResize);
+        }}
       >
         <Suspense fallback={null}>
           <Scene />
@@ -299,7 +319,7 @@ export default function HeroScene() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, duration: 0.6 }}
-            className="hero-year text-3xl md:text-5xl lg:text-6xl font-light text-amber-200/70 mb-3"
+            className="hero-year text-4xl xs:text-5xl md:text-6xl lg:text-7xl font-light text-amber-200/70 mb-4 sm:mb-6"
           >
             ১৪৩৩
           </motion.h2>
@@ -323,7 +343,7 @@ export default function HeroScene() {
             transition={{ delay: 1.6, duration: 0.6 }}
             whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(255,107,53,0.5)" }}
             whileTap={{ scale: 0.95 }}
-            className="pointer-events-auto btn-primary text-lg px-10 py-3.5 rounded-full"
+            className="pointer-events-auto btn-primary text-base sm:text-lg px-8 sm:px-12 py-3 sm:py-4 rounded-full shadow-2xl"
             onClick={() =>
               document
                 .getElementById("menu")

@@ -95,14 +95,14 @@ export default function CheckoutModal({ isOpen, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 50 }}
             transition={{ type: "spring", damping: 25 }}
-            className="fixed inset-2 sm:inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-4xl md:max-h-[85vh] bg-slate-950 border border-white/10 rounded-2xl sm:rounded-3xl z-[90] overflow-hidden shadow-2xl flex flex-col"
+            className="fixed inset-0 xs:inset-2 sm:inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-4xl md:max-h-[90vh] bg-slate-950 border border-white/10 rounded-none xs:rounded-2xl sm:rounded-3xl z-[90] overflow-hidden shadow-2xl flex flex-col"
           >
             {success ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4 }}
-                className="p-8 md:p-12 text-center min-h-[500px] flex flex-col items-center justify-center"
+                className="p-8 md:p-12 text-center min-h-[500px] flex flex-col items-center justify-center h-full overflow-y-auto"
               >
                 <motion.div
                   initial={{ scale: 0 }}
@@ -112,10 +112,10 @@ export default function CheckoutModal({ isOpen, onClose }) {
                 >
                   ✅
                 </motion.div>
-                <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 mb-3">
+                <h2 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 mb-3 px-4">
                   অর্ডার সম্পন্ন!
                 </h2>
-                <p className="text-gray-400 mb-4 text-lg">
+                <p className="text-gray-400 mb-4 text-sm sm:text-lg">
                   আপনার অর্ডার সফলভাবে গৃহীত হয়েছে
                 </p>
                 <motion.div
@@ -124,26 +124,23 @@ export default function CheckoutModal({ isOpen, onClose }) {
                   transition={{ delay: 0.3 }}
                   className="inline-flex flex-col items-center gap-4 w-full max-w-xs mb-6"
                 >
-                  <div className="w-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-2xl px-8 py-6 backdrop-blur-sm">
-                    <p className="text-gray-400 text-sm mb-2">আপনার অর্ডার নম্বর</p>
-                    <p className="text-5xl font-black text-amber-400 font-mono">
+                  <div className="w-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 rounded-2xl px-4 sm:px-8 py-4 sm:py-6 backdrop-blur-sm">
+                    <p className="text-gray-400 text-[10px] sm:text-xs mb-2 uppercase tracking-widest font-bold">অর্ডার নম্বর</p>
+                    <p className="text-4xl xs:text-5xl font-black text-amber-400 font-mono">
                       {orderNumber}
                     </p>
                   </div>
                   <div className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 backdrop-blur-sm">
-                    <p className="text-gray-300 text-sm leading-relaxed">
+                    <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
                       এই নম্বরটি নোট করে রাখুন। স্টল ম্যানেজার এই নম্বর দিয়ে আপনার অর্ডার চেক করবেন।
                     </p>
                   </div>
                 </motion.div>
-                <p className="text-gray-500 text-sm mb-8">
-                  অর্ডারের সম্পূর্ণ বিবরণ আপনার ইমেইলে পাঠানো হয়েছে
-                </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleClose}
-                  className="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all"
+                  className="bg-gradient-to-r from-amber-500 to-orange-600 text-white font-bold px-10 py-4 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all text-sm sm:text-base"
                 >
                   ঠিক আছে, মেনুতে ফিরি
                 </motion.button>
@@ -170,10 +167,10 @@ export default function CheckoutModal({ isOpen, onClose }) {
                 </div>
 
                 <div className="flex-1 overflow-y-auto">
-                  <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-white/10 h-full">
+                  <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row h-full">
                     
                     {/* Left: Customer Info & Payment */}
-                    <div className="flex-1 p-6 sm:p-8 space-y-8 lg:max-h-full">
+                    <div className="flex-1 p-5 sm:p-8 space-y-8 lg:max-h-full lg:overflow-y-auto custom-scrollbar">
                       {(error) && (
                         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="bg-red-500/10 border border-red-500/20 px-4 py-3 rounded-xl text-red-400 text-sm flex items-center gap-3">
                           <span>⚠️</span> {error}
@@ -190,52 +187,46 @@ export default function CheckoutModal({ isOpen, onClose }) {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <label className="text-[11px] font-black text-gray-500 uppercase ml-1 block text-center sm:text-left">নাম *</label>
-                            <div className="relative group">
-                              <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="আপনার পূর্ণ নাম"
-                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium text-center placeholder:text-center"
-                                required
-                              />
-                            </div>
+                            <input
+                              type="text"
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                              placeholder="আপনার পূর্ণ নাম"
+                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium text-center sm:text-left"
+                              required
+                            />
                           </div>
                           <div className="space-y-2">
                             <label className="text-[11px] font-black text-gray-500 uppercase ml-1 block text-center sm:text-left">ফোন (ঐচ্ছিক)</label>
-                            <div className="relative group">
-                              <input
-                                type="tel"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                placeholder="০১৭... (অংশগ্রহণমূলক)"
-                                className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium text-center placeholder:text-center"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <label className="text-[11px] font-black text-gray-500 uppercase ml-1 block text-center">ইমেইল *</label>
-                          <div className="relative group">
                             <input
-                              type="email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              placeholder="আপনার প্রাতিষ্ঠানিক বা পার্সোনাল ইমেইল"
-                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium text-center placeholder:text-center"
-                              required
+                              type="tel"
+                              value={phone}
+                              onChange={(e) => setPhone(e.target.value)}
+                              placeholder="০১৭... (ঐচ্ছিক)"
+                              className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium text-center sm:text-left"
                             />
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[11px] font-black text-gray-500 uppercase ml-1 block text-center">অতিরিক্ত তথ্য</label>
+                          <label className="text-[11px] font-black text-gray-500 uppercase ml-1 block text-center sm:text-left">ইমেইল *</label>
+                          <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="আপনার প্রাতিষ্ঠানিক বা পার্সোনাল ইমেইল"
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium text-center sm:text-left"
+                            required
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-[11px] font-black text-gray-500 uppercase ml-1 block text-center sm:text-left">অতিরিক্ত তথ্য</label>
                           <textarea
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="ব্যাচ, রোল, বিভাগ বা বিশেষ কোনো অনুরোধ..."
-                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium resize-none h-24 text-center placeholder:text-center"
+                            className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all font-medium resize-none h-24 text-center sm:text-left"
                           />
                         </div>
                       </section>
@@ -247,7 +238,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                           <h3 className="text-sm font-black text-white uppercase tracking-[0.15em]">পেমেন্ট পদ্ধতি</h3>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
                           {[
                             { id: "cash", label: "ক্যাশ", emoji: "💵", desc: "স্টলে সরাসরি পেমেন্ট" },
                             { id: "online", label: "অনলাইন", emoji: "📱", desc: "বিকাশ বা নগদ" },
@@ -258,16 +249,16 @@ export default function CheckoutModal({ isOpen, onClose }) {
                               onClick={() => setPaymentMethod(method.id === "cash" ? "ক্যাশ" : "অনলাইন")}
                               whileHover={{ y: -2, border: '1px solid rgba(245, 158, 11, 0.4)' }}
                               whileTap={{ scale: 0.98 }}
-                              className={`relative p-5 rounded-2xl flex flex-col items-center gap-2 border-2 transition-all duration-300 ${(method.id === "cash" && paymentMethod === "ক্যাশ") || (method.id === "online" && paymentMethod === "অনলাইন")
+                              className={`relative p-4 sm:p-5 rounded-2xl flex flex-col items-center gap-2 border-2 transition-all duration-300 ${(method.id === "cash" && paymentMethod === "ক্যাশ") || (method.id === "online" && paymentMethod === "অনলাইন")
                                 ? "border-amber-500 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
                                 : "border-white/5 bg-white/[0.02] hover:bg-white/[0.04]"
-                              }`}
+                                }`}
                             >
-                              <span className="text-3xl mb-1">{method.emoji}</span>
-                              <span className={`font-black text-sm ${paymentMethod === (method.id === "cash" ? "ক্যাশ" : "অনলাইন") ? "text-amber-400" : "text-gray-400"}`}>{method.label}</span>
-                              <span className="text-[10px] text-gray-500 font-medium">{method.desc}</span>
+                              <span className="text-2xl sm:text-3xl mb-1">{method.emoji}</span>
+                              <span className={`font-black text-xs sm:text-sm ${paymentMethod === (method.id === "cash" ? "ক্যাশ" : "অনলাইন") ? "text-amber-400" : "text-gray-400"}`}>{method.label}</span>
+                              <span className="text-[9px] xs:text-[10px] text-gray-500 font-medium text-center">{method.desc}</span>
                               {paymentMethod === (method.id === "cash" ? "ক্যাশ" : "অনলাইন") && (
-                                <span className="absolute top-2 right-2 text-amber-500"><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg></span>
+                                <span className="absolute top-2 right-2 text-amber-500"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg></span>
                               )}
                             </motion.button>
                           ))}
@@ -276,19 +267,22 @@ export default function CheckoutModal({ isOpen, onClose }) {
                     </div>
 
                     {/* Right: Summary */}
-                    <aside className="w-full lg:w-96 bg-white/[0.02] p-6 sm:p-8 flex flex-col h-full overflow-y-auto">
-                      <div className="sticky top-0 space-y-8 flex-1">
+                    <aside className="w-full lg:w-96 bg-white/[0.03] lg:bg-white/[0.02] p-6 sm:p-8 flex flex-col border-t lg:border-t-0 lg:border-l border-white/10">
+                      <div className="space-y-8 flex-1">
                         <div className="space-y-5">
-                          <h3 className="text-sm font-black text-white uppercase tracking-[0.15em] flex items-center gap-2">
-                             <span className="w-1.5 h-6 bg-amber-500 rounded-full" /> আপনার অর্ডার
-                          </h3>
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-black text-white uppercase tracking-[0.15em] flex items-center gap-2">
+                               <span className="w-1.5 h-6 bg-amber-500 rounded-full" /> আপনার অর্ডার
+                            </h3>
+                            <span className="bg-white/5 px-2 py-1 rounded text-[10px] font-bold text-gray-400">{items.length} আইটেম</span>
+                          </div>
                           
-                          <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                          <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                             {items.map((item) => (
-                              <div key={item.id} className="flex justify-between items-start gap-4">
+                              <div key={item.id} className="flex justify-between items-start gap-4 p-2 rounded-lg hover:bg-white/5 transition-colors">
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm text-gray-200 font-bold leading-tight">{item.name}</p>
-                                  <p className="text-[11px] text-gray-500 font-black tracking-widest mt-1">পরিমাণ: {item.quantity}</p>
+                                  <p className="text-[11px] text-gray-500 font-black tracking-widest mt-1">পরিমাণ: {item.quantity} × ৳{Math.round(item.price)}</p>
                                 </div>
                                 <p className="text-sm font-black text-white">৳{Math.round(item.price * item.quantity)}</p>
                               </div>
@@ -296,15 +290,15 @@ export default function CheckoutModal({ isOpen, onClose }) {
                           </div>
                         </div>
 
-                        <div className="pt-6 border-t border-white/5 space-y-3">
-                          <div className="flex justify-between items-center text-gray-500 text-xs font-bold uppercase tracking-widest">
+                        <div className="pt-6 border-t border-white/5 space-y-4">
+                          <div className="flex justify-between items-center text-gray-500 text-[10px] xs:text-xs font-black uppercase tracking-widest">
                             <span>সাবটোটাল</span>
                             <span className="font-mono">৳{Math.round(getTotal())}</span>
                           </div>
                           <div className="pt-4 flex justify-between items-end border-t border-white/10">
                             <div>
-                              <p className="text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-1">মোট পরিমাণ</p>
-                              <p className="text-4xl font-black text-white tracking-tight">৳{Math.round(getTotal())}</p>
+                              <p className="text-[9px] xs:text-[10px] font-black text-amber-500 uppercase tracking-[0.2em] mb-1">মোট পরিমাণ</p>
+                              <p className="text-3xl xs:text-4xl font-black text-white tracking-tight">৳{Math.round(getTotal())}</p>
                             </div>
                             <span className="text-[10px] text-gray-600 font-bold uppercase tracking-[0.1em] mb-1">BDT</span>
                           </div>
@@ -347,7 +341,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                         </AnimatePresence>
                       </div>
 
-                      <div className="mt-12 space-y-4">
+                      <div className="mt-8 sm:mt-12 space-y-4">
                         <motion.button
                           type="submit"
                           disabled={loading || !paymentMethod}
@@ -361,7 +355,7 @@ export default function CheckoutModal({ isOpen, onClose }) {
                             <>অর্ডার প্লেস করুন <span className="group-hover:translate-x-1 transition-transform">→</span></>
                           )}
                         </motion.button>
-                        <p className="text-[10px] text-gray-600 text-center font-bold tracking-tight px-4 leading-relaxed uppercase">অর্ডার প্লেস করার মাধ্যমে আপনি আমাদের শর্তাবলী মেনে নিচ্ছেন।</p>
+                        <p className="text-[9px] text-gray-600 text-center font-bold tracking-tight px-4 leading-relaxed uppercase">অর্ডার প্লেস করার মাধ্যমে আপনি আমাদের শর্তাবলী মেনে নিচ্ছেন।</p>
                       </div>
                     </aside>
                   </form>

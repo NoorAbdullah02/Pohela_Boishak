@@ -72,15 +72,15 @@ export default function Navbar() {
                 <img src="/images/depLogo.png" alt="ICE Department Logo" className="w-full h-full object-contain rounded-full drop-shadow-md" />
               </div>
             </div>
-            <div className="flex flex-col leading-tight">
+            <div className="flex flex-col leading-none sm:leading-tight">
               <motion.h1
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-lg sm:text-2xl font-black tracking-tight bg-gradient-to-r from-[#fcbf49] via-[#ff6b35] to-[#f77f00] bg-clip-text text-transparent"
+                className="text-base xs:text-lg sm:text-2xl font-black tracking-tight bg-gradient-to-r from-[#fcbf49] via-[#ff6b35] to-[#f77f00] bg-clip-text text-transparent"
                 style={{
                   fontFamily: "'Playfair Display', serif",
-                  letterSpacing: "-0.02em",
+                  letterSpacing: "-0.01em",
                 }}
               >
                 শুভ নববর্ষ
@@ -89,7 +89,7 @@ export default function Navbar() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
-                className="text-[11px] sm:text-xs font-semibold text-[#fcbf49]/70 uppercase tracking-widest"
+                className="text-[9px] xs:text-[10px] sm:text-xs font-semibold text-[#fcbf49]/70 uppercase tracking-[0.15em] sm:tracking-widest"
               >
                 ICE বিভাগ
               </motion.p>
@@ -240,7 +240,7 @@ export default function Navbar() {
             transition={{ duration: 0.3 }}
             className="relative md:hidden border-t border-white/10"
           >
-            <div className="backdrop-blur-lg bg-slate-950/90 px-3 sm:px-4 py-4 sm:py-6 space-y-2">
+            <div className="backdrop-blur-lg bg-slate-950/95 px-4 py-8 space-y-4">
               {links.map((link, index) => (
                 <motion.a
                   key={link.href}
@@ -250,7 +250,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ x: 4, color: "#ff6b35" }}
-                  className="block py-3 sm:py-4 px-4 text-center text-base sm:text-lg text-gray-300 hover:text-[#ff6b35] transition-colors font-medium rounded-lg hover:bg-white/5 min-h-[44px] flex items-center justify-center"
+                  className="block py-4 px-6 text-center text-lg text-gray-300 hover:text-[#ff6b35] transition-all font-bold rounded-xl bg-white/5 border border-white/5 hover:border-[#ff6b35]/20 min-h-[56px] flex items-center justify-center shadow-lg"
                 >
                   {link.label}
                 </motion.a>

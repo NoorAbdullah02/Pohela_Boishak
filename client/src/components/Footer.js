@@ -34,7 +34,7 @@ export default function Footer() {
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Main Footer Content */}
-                <div className="py-12 sm:py-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-12">
+                <div className="py-12 sm:py-16 md:py-20 grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
                     {/* Brand Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -51,10 +51,10 @@ export default function Footer() {
                                 </div>
                             </div>
                             <div>
-                                <h3 className="text-base sm:text-lg font-bold text-gradient-gold">
+                                <h3 className="text-lg sm:text-xl font-black text-gradient-gold leading-tight">
                                     শুভ নববর্ষ
                                 </h3>
-                                <p className="text-xs sm:text-sm text-amber-400/60">ICE Department</p>
+                                <p className="text-[10px] sm:text-xs text-amber-400/60 font-bold uppercase tracking-wider">ICE Department</p>
                             </div>
                         </div>
                         <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
@@ -140,7 +140,7 @@ export default function Footer() {
                 >
                     <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
                         <span className="text-xs sm:text-sm text-gray-500">আমাদের অনুসরণ করুন:</span>
-                        <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex items-center gap-3 sm:gap-4">
                             {[
                                 { icon: "f", label: "Facebook", href: "https://facebook.com" },
                                 { icon: "📸", label: "Instagram", href: "https://instagram.com" },
@@ -151,9 +151,9 @@ export default function Footer() {
                                     href={social.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    whileHover={{ scale: 1.1, y: -2 }}
+                                    whileHover={{ scale: 1.1, y: -2, backgroundColor: "rgba(245, 158, 11, 0.15)" }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="w-10 h-10 rounded-full bg-white/5 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 flex items-center justify-center text-sm font-bold text-gray-400 hover:text-amber-400 transition-all"
+                                    className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sm font-bold text-gray-400 hover:text-amber-400 transition-all shadow-lg"
                                     title={social.label}
                                 >
                                     {social.icon}

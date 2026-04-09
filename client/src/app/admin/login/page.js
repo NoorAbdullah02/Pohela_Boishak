@@ -35,162 +35,207 @@ export default function AdminLogin() {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30, rotateX: -15 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      rotateX: 0,
+      transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] },
     },
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden flex items-center justify-center px-4">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-[#030712] relative overflow-hidden flex items-center justify-center px-4">
+      {/* Rich Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Orbital elements */}
+        {/* Geometric Grid */}
+        <div className="absolute inset-0" style={{
+          backgroundImage: `
+            linear-gradient(rgba(255,107,53,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,107,53,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }} />
+        
+        {/* Large Orb */}
         <motion.div
           animate={{
             rotate: 360,
           }}
           transition={{
-            duration: 20,
+            duration: 45,
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute -top-1/2 -right-1/2 w-full h-full"
+          className="absolute -top-[30%] -right-[20%] w-[700px] h-[700px]"
         >
-          <div className="w-96 h-96 rounded-full border border-amber-500/10 absolute top-1/4 right-1/4" />
+          <div className="w-full h-full rounded-full border border-[#ff6b35]/5" />
+          <div className="w-[500px] h-[500px] rounded-full border border-[#ff6b35]/3 absolute top-1/4 left-1/4" />
+          <div className="w-[300px] h-[300px] rounded-full border border-[#ff6b35]/2 absolute top-2/4 left-2/4" />
         </motion.div>
 
-        {/* Gradient orbs */}
+        {/* Animated Gradient Orbs */}
         <motion.div
           animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
+            scale: [1, 1.3, 1],
+            x: [0, 60, 0],
+            y: [0, 40, 0],
           }}
           transition={{
-            duration: 8,
+            duration: 12,
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-br from-amber-600/20 to-orange-600/10 rounded-full blur-3xl"
-        />
+          className="absolute top-[15%] left-[10%] w-[400px] h-[400px]"
+        >
+          <div className="w-full h-full bg-gradient-radial from-[#ff6b35]/25 via-[#e63946]/15 to-transparent rounded-full blur-[80px]" />
+        </motion.div>
 
         <motion.div
           animate={{
-            x: [0, -50, 0],
-            y: [0, -30, 0],
+            scale: [1.2, 1, 1.2],
+            x: [0, -40, 0],
+            y: [0, -50, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 1,
+            delay: 2,
           }}
-          className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-red-600/20 to-amber-600/10 rounded-full blur-3xl"
-        />
+          className="absolute bottom-[20%] right-[5%] w-[500px] h-[500px]"
+        >
+          <div className="w-full h-full bg-gradient-radial from-[#e63946]/20 via-[#ff6b35]/10 to-transparent rounded-full blur-[100px]" />
+        </motion.div>
 
-        {/* Grid pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-5" preserveAspectRatio="none">
-          <defs>
-            <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-              <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+        {/* Floating Particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              y: [0, -100, 0],
+              x: [0, Math.sin(i) * 30, 0],
+              opacity: [0.3, 0.8, 0.3],
+            }}
+            transition={{
+              duration: 6 + i,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.5,
+            }}
+            className="absolute w-2 h-2 rounded-full bg-[#ff6b35]/40"
+            style={{
+              left: `${15 + i * 15}%`,
+              top: `${20 + i * 10}%`,
+            }}
+          />
+        ))}
       </div>
 
-      {/* Main Content */}
+      {/* Main Card Container */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative w-full max-w-md z-10"
+        className="relative w-full max-w-[460px] z-10"
       >
-        {/* Glow effect behind card */}
+        {/* Glow Effect Behind */}
         <motion.div
           animate={{
             boxShadow: [
-              "0 0 60px rgba(217, 119, 6, 0.2)",
-              "0 0 80px rgba(217, 119, 6, 0.3)",
-              "0 0 60px rgba(217, 119, 6, 0.2)",
+              "0 0 80px rgba(255,107,53,0.15), 0 0 120px rgba(230,57,70,0.1)",
+              "0 0 100px rgba(255,107,53,0.25), 0 0 150px rgba(230,57,70,0.15)",
+              "0 0 80px rgba(255,107,53,0.15), 0 0 120px rgba(230,57,70,0.1)",
             ],
           }}
           transition={{
-            duration: 3,
+            duration: 4,
             repeat: Infinity,
           }}
-          className="absolute inset-0 rounded-3xl"
+          className="absolute inset-0 rounded-[2.5rem]"
         />
 
         {/* Card */}
         <motion.div
           variants={itemVariants}
-          className="relative backdrop-blur-2xl bg-slate-900/50 rounded-3xl p-8 border border-white/10 shadow-2xl overflow-hidden"
+          className="relative bg-[#0a0a1a]/80 backdrop-blur-3xl rounded-[2.5rem] p-10 sm:p-12 border border-white/[0.08] shadow-2xl overflow-hidden"
         >
-          {/* Gradient overlay in corner */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 to-transparent rounded-full blur-3xl -z-10 transform translate-x-1/2 -translate-y-1/2" />
+          {/* Decorative Corner Elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 opacity-30">
+            <div className="absolute top-8 right-8 w-px h-20 bg-gradient-to-b from-[#ff6b35] to-transparent" />
+            <div className="absolute top-8 right-8 w-20 h-px bg-gradient-to-r from-[#ff6b35] to-transparent" />
+          </div>
+          <div className="absolute bottom-0 left-0 w-40 h-40 opacity-30">
+            <div className="absolute bottom-8 left-8 w-px h-20 bg-gradient-to-t from-[#e63946] to-transparent" />
+            <div className="absolute bottom-8 left-8 w-20 h-px bg-gradient-to-l from-[#e63946] to-transparent" />
+          </div>
 
-          {/* Header Section */}
-          <div className="text-center mb-10">
+          {/* Gradient Overlay */}
+          <div className="absolute top-[-50%] right-[-30%] w-[400px] h-[400px] bg-gradient-radial from-[#ff6b35]/8 to-transparent rounded-full blur-[60px] pointer-events-none" />
+          <div className="absolute bottom-[-30%] left-[-20%] w-[300px] h-[300px] bg-gradient-radial from-[#e63946]/6 to-transparent rounded-full blur-[50px] pointer-events-none" />
+
+          {/* Header */}
+          <div className="text-center mb-10 relative z-10">
             <motion.div
               variants={itemVariants}
-              className="mb-4 relative inline-block"
+              className="mb-6"
             >
-              {/* Icon with rotating border */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 6,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                className="absolute inset-0 rounded-full border border-transparent bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
-              />
-              <div className="relative w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 flex items-center justify-center border border-amber-500/20 shadow-lg shadow-amber-500/10">
-                <motion.span
-                  animate={{ scale: [1, 1.1, 1] }}
+              {/* Logo Badge */}
+              <div className="relative inline-block">
+                <motion.div
+                  animate={{ rotate: 360 }}
                   transition={{
-                    duration: 2,
+                    duration: 20,
                     repeat: Infinity,
+                    ease: "linear",
                   }}
-                  className="text-4xl"
-                >
-                  🔐
-                </motion.span>
+                  className="absolute inset-0 rounded-2xl border border-dashed border-[#ff6b35]/30"
+                />
+                <div className="relative w-22 h-22 mx-auto rounded-2xl bg-gradient-to-br from-[#ff6b35]/20 to-[#e63946]/10 flex items-center justify-center border border-[#ff6b35]/30 shadow-lg shadow-[#ff6b35]/20">
+                  <motion.span
+                    animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                    className="text-5xl filter drop-shadow-lg"
+                  >
+                    🔐
+                  </motion.span>
+                </div>
               </div>
             </motion.div>
 
             <motion.h1
               variants={itemVariants}
-              className="text-3xl font-black tracking-tight mb-2 bg-gradient-to-r from-amber-300 via-amber-400 to-orange-400 bg-clip-text text-transparent"
+              className="text-3xl sm:text-4xl font-black tracking-tight mb-3 bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              অ্যাডমিন অ্যাক্সেস
+              অ্যাডমিন প্যানেল
             </motion.h1>
 
             <motion.p
               variants={itemVariants}
-              className="text-sm text-gray-400 font-medium"
+              className="text-sm text-gray-500 font-medium"
             >
-              শুভ নববর্ষ — ICE বিভাগ স্টল
+              Pohela Boishakh — Admin Access
             </motion.p>
           </div>
 
-          {/* Form Section */}
-          <form onSubmit={handleLogin} className="space-y-5">
+          {/* Form */}
+          <form onSubmit={handleLogin} className="space-y-6 relative z-10">
             {/* Email Field */}
             <motion.div variants={itemVariants}>
-              <label className="block text-sm font-semibold text-gray-300 mb-2.5 tracking-wide">
-                📧 ইমেইল ঠিকানা
+              <label className="block text-sm font-semibold text-gray-300 mb-3 tracking-wide flex items-center gap-2">
+                <span className="text-base">📧</span> ইমেইল ঠিকানা
               </label>
               <div className="relative group">
                 <input
@@ -198,18 +243,19 @@ export default function AdminLogin() {
                   id="admin-email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@yoursite.com"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-gray-600/30 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 focus:bg-slate-800/80 transition-all duration-300 backdrop-blur-sm"
+                  placeholder="admin@pohelaboishakh.com"
+                  className="w-full px-5 py-4 rounded-2xl bg-[#111118]/80 border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#ff6b35]/60 focus:bg-[#111118] focus:shadow-[0_0_20px_rgba(255,107,53,0.15)] transition-all duration-300 backdrop-blur-sm"
                   required
                 />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-500/0 via-orange-500/0 to-amber-500/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none blur-xl" />
+                {/* Focus glow effect */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#ff6b35]/0 via-[#ff6b35]/5 to-[#ff6b35]/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none blur-xl" />
               </div>
             </motion.div>
 
             {/* Password Field */}
             <motion.div variants={itemVariants}>
-              <label className="block text-sm font-semibold text-gray-300 mb-2.5 tracking-wide">
-                🔑 পাসওয়ার্ড
+              <label className="block text-sm font-semibold text-gray-300 mb-3 tracking-wide flex items-center gap-2">
+                <span className="text-base">🔑</span> পাসওয়ার্ড
               </label>
               <div className="relative group">
                 <input
@@ -217,16 +263,16 @@ export default function AdminLogin() {
                   id="admin-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-800/50 border border-gray-600/30 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500/50 focus:bg-slate-800/80 transition-all duration-300 backdrop-blur-sm pr-12"
+                  placeholder="••••••••••"
+                  className="w-full px-5 py-4 rounded-2xl bg-[#111118]/80 border border-white/[0.08] text-white placeholder-gray-600 focus:outline-none focus:border-[#ff6b35]/60 focus:bg-[#111118] focus:shadow-[0_0_20px_rgba(255,107,53,0.15)] transition-all duration-300 backdrop-blur-sm pr-14"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-amber-400 transition-colors text-lg"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#ff6b35] transition-colors text-xl"
                 >
-                  {showPassword ? "👁️" : "👁️‍🗨️"}
+                  {showPassword ? "���️" : "👁️‍🗨️"}
                 </button>
               </div>
             </motion.div>
@@ -234,12 +280,12 @@ export default function AdminLogin() {
             {/* Error Message */}
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 backdrop-blur-sm"
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                className="bg-red-500/10 border border-red-500/25 rounded-2xl p-4 backdrop-blur-sm"
               >
-                <p className="text-red-400 text-sm font-medium flex items-center gap-2">
-                  <span>⚠️</span>
+                <p className="text-red-400 text-sm font-semibold flex items-center gap-2">
+                  <span className="text-base">⚠️</span>
                   {error}
                 </p>
               </motion.div>
@@ -250,13 +296,16 @@ export default function AdminLogin() {
               variants={itemVariants}
               type="submit"
               whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
+              whileTap={{ scale: 0.985 }}
               disabled={loading}
               id="admin-login-btn"
-              className="w-full relative mt-8 py-3.5 rounded-xl font-bold text-lg tracking-wide overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full relative mt-8 py-5 rounded-2xl font-bold text-lg tracking-wide overflow-hidden group disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
-              <div className="relative bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl px-6 py-3.5 flex items-center justify-center gap-3 shadow-lg shadow-amber-500/30 group-hover:shadow-orange-500/40 transition-all duration-300">
+              {/* Button glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#ff6b35] via-[#e63946] to-[#ff6b35] opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
+              
+              {/* Button background */}
+              <div className="relative bg-gradient-to-r from-[#ff6b35] to-[#e63946] rounded-2xl px-6 py-5 flex items-center justify-center gap-3 shadow-lg shadow-[#ff6b35]/30 group-hover:shadow-[#ff6b35]/50 transition-all duration-300">
                 {loading ? (
                   <>
                     <motion.div
@@ -266,14 +315,14 @@ export default function AdminLogin() {
                         repeat: Infinity,
                         ease: "linear",
                       }}
-                      className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                      className="w-6 h-6 border-2 border-white/40 border-t-white rounded-full"
                     />
-                    <span className="text-white">যাচাই করা হচ্ছে...</span>
+                    <span className="text-white font-bold">যাচাই করা হচ্ছে...</span>
                   </>
                 ) : (
                   <>
-                    <span>🚀</span>
-                    <span className="text-white">লগইন করুন</span>
+                    <span className="text-2xl">🚀</span>
+                    <span className="text-white font-bold">লগইন করুন</span>
                   </>
                 )}
               </div>
@@ -281,56 +330,60 @@ export default function AdminLogin() {
           </form>
 
           {/* Divider */}
-          <div className="my-8 flex items-center gap-3">
+          <div className="my-8 flex items-center gap-4 relative z-10">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <span className="text-xs text-gray-500 px-2 uppercase tracking-widest font-semibold">অথবা</span>
+            <span className="text-xs text-gray-600 font-semibold uppercase tracking-[0.2em]">অথবা</span>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           </div>
 
           {/* Footer */}
-          <motion.div variants={itemVariants} className="text-center space-y-3">
-            <p className="text-xs text-gray-400">প্রথমবার ভিজিট করছেন?</p>
+          <motion.div variants={itemVariants} className="text-center relative z-10">
+            <p className="text-xs text-gray-500 mb-3">প্রথমবার ভিজিট করছেন?</p>
             <motion.a
               href="/"
-              whileHover={{ x: -8 }}
-              className="inline-flex items-center gap-2 text-sm font-semibold text-amber-400 hover:text-amber-300 transition-colors group"
+              whileHover={{ x: -5 }}
+              className="inline-flex items-center gap-2 text-sm font-semibold text-gray-400 hover:text-white transition-colors group"
             >
-              <span className="group-hover:-translate-x-1 transition-transform">←</span>
+              <span className="group-hover:-translate-x-1 transition-transform duration-300">←</span>
               মূল পেজে ফিরে যান
             </motion.a>
           </motion.div>
         </motion.div>
 
-        {/* Floating elements around card */}
+        {/* Floating Decorative Elements */}
         <motion.div
           animate={{
-            y: [0, -20, 0],
+            y: [0, -25, 0],
+            x: [0, 10, 0],
           }}
           transition={{
-            duration: 3,
+            duration: 5,
             repeat: Infinity,
+            ease: "easeInOut",
           }}
-          className="absolute -top-16 -left-16 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"
+          className="absolute -top-20 -left-20 w-36 h-36 bg-[#ff6b35]/10 rounded-full blur-3xl"
         />
         <motion.div
           animate={{
-            y: [0, 20, 0],
+            y: [0, 25, 0],
+            x: [0, -15, 0],
           }}
           transition={{
-            duration: 4,
+            duration: 6,
             repeat: Infinity,
+            ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute -bottom-16 -right-16 w-40 h-40 bg-orange-500/10 rounded-full blur-2xl"
+          className="absolute -bottom-20 -right-20 w-44 h-44 bg-[#e63946]/8 rounded-full blur-3xl"
         />
       </motion.div>
 
-      {/* Keyboard shortcut hint */}
+      {/* Bottom Hint */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5 }}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 text-xs text-gray-500 font-medium"
+        transition={{ delay: 1.2 }}
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 text-xs text-gray-600 font-medium"
       >
         💡 টিপস: দ্রুত লগইন করতে এন্টার চাপুন
       </motion.div>
