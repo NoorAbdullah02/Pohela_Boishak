@@ -126,7 +126,8 @@ export default function FoodCard({ item, index }) {
                 <img
                   src={getImageUrl(item.image_url)}
                   alt={item.name}
-                  className="relative w-full h-full object-cover p-2 group-hover:scale-110 group-hover:-translate-y-1 transition-transform duration-700 z-10 drop-shadow-[0_15px_20px_rgba(0,0,0,0.6)]"
+                  loading="lazy"
+                  className="relative w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 z-10 drop-shadow-[0_15px_20px_rgba(0,0,0,0.6)]"
                 />
               </motion.div>
             </div>

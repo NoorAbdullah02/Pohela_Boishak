@@ -19,7 +19,7 @@ function MangalPradip({ position, color }) {
     <Float speed={2} rotationIntensity={0.4} floatIntensity={0.8}>
       <group ref={ref} position={position} scale={0.55}>
         <mesh>
-          <cylinderGeometry args={[0.18, 0.4, 0.15, 16]} />
+          <cylinderGeometry args={[0.18, 0.4, 0.15, 12]} />
           <meshStandardMaterial
             color="#d4a843"
             metalness={0.9}
@@ -27,7 +27,7 @@ function MangalPradip({ position, color }) {
           />
         </mesh>
         <mesh position={[0, 0.18, 0]}>
-          <cylinderGeometry args={[0.06, 0.18, 0.35, 16]} />
+          <cylinderGeometry args={[0.06, 0.18, 0.35, 12]} />
           <meshStandardMaterial
             color="#b8860b"
             metalness={0.8}
@@ -35,7 +35,7 @@ function MangalPradip({ position, color }) {
           />
         </mesh>
         <mesh position={[0, 0.5, 0]}>
-          <sphereGeometry args={[0.14, 16, 16]} />
+          <sphereGeometry args={[0.14, 12, 12]} />
           <MeshDistortMaterial
             color={color}
             speed={4}
@@ -68,7 +68,7 @@ function Dhol({ position }) {
     <Float speed={1.4} rotationIntensity={0.25}>
       <group ref={ref} position={position} rotation={[0, 0, Math.PI / 5]}>
         <mesh>
-          <cylinderGeometry args={[0.28, 0.28, 0.55, 16]} />
+          <cylinderGeometry args={[0.28, 0.28, 0.55, 12]} />
           <meshStandardMaterial
             color="#8B4513"
             metalness={0.3}
@@ -108,7 +108,7 @@ function Mask({ position }) {
     <Float speed={1.2} rotationIntensity={0.2}>
       <group ref={ref} position={position} scale={0.5}>
         <mesh>
-          <sphereGeometry args={[0.4, 16, 16, 0, Math.PI]} />
+          <sphereGeometry args={[0.4, 12, 12, 0, Math.PI]} />
           <meshStandardMaterial
             color="#e63946"
             side={THREE.DoubleSide}
@@ -149,7 +149,7 @@ function AlponaRing({ position, scale = 1 }) {
         rotation={[Math.PI / 2, 0, 0]}
       >
         <mesh>
-          <torusGeometry args={[0.5, 0.04, 8, 64]} />
+          <torusGeometry args={[0.5, 0.04, 6, 32]} />
           <meshStandardMaterial
             color="#ffd700"
             metalness={0.9}
@@ -157,7 +157,7 @@ function AlponaRing({ position, scale = 1 }) {
           />
         </mesh>
         <mesh>
-          <torusGeometry args={[0.35, 0.025, 8, 64]} />
+          <torusGeometry args={[0.35, 0.025, 6, 32]} />
           <meshStandardMaterial
             color="#ff6b35"
             metalness={0.8}
@@ -165,7 +165,7 @@ function AlponaRing({ position, scale = 1 }) {
           />
         </mesh>
         <mesh>
-          <torusGeometry args={[0.2, 0.015, 8, 64]} />
+          <torusGeometry args={[0.2, 0.015, 6, 32]} />
           <meshStandardMaterial
             color="#e63946"
             metalness={0.8}
@@ -178,7 +178,7 @@ function AlponaRing({ position, scale = 1 }) {
 }
 
 function FloatingParticles() {
-  const count = 150;
+  const count = 100;
   const ref = useRef();
 
   const positions = useMemo(() => {
@@ -266,7 +266,8 @@ export default function HeroScene() {
 
       <Canvas
         camera={{ position: [0, 0, 8], fov: 55 }}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        dpr={[1, 2]}
         style={{ background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)" }}
       >
         <Suspense fallback={null}>
