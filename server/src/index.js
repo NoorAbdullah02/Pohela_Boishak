@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import authRoutes from './routes/auth.js';
@@ -65,6 +66,19 @@ app.use((req, res, next) => {
   next();
 });
 
+// CRITICAL: Handle clean URLs for static export (e.g., /admin/login -> admin/login.html)
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.url.startsWith('/api/') && !req.url.includes('.')) {
+    const cleanPath = req.url.replace(/\/$/, '') || '/index';
+    const htmlPath = join(clientOutPath, `${cleanPath}.html`);
+    
+    if (fs.existsSync(htmlPath)) {
+      return res.sendFile(htmlPath);
+    }
+  }
+  next();
+});
+
 app.use(express.static(clientOutPath, {
   extensions: ['html', 'txt', 'svg', 'ico'],
   setHeaders: (res, path) => {
@@ -83,7 +97,8 @@ app.get('*', (req, res) => {
   const filePath = join(clientOutPath, 'index.html');
   res.sendFile(filePath, (err) => {
     if (err) {
-      res.status(500).json({ message: 'সার্ভারে অভ্যন্তরীণ সমস্যা হয়েছে।' });
+      // If index.html is missing, something is wrong with the build
+      res.status(404).json({ message: 'Requested page not found.' });
     }
   });
 });
