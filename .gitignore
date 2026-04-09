@@ -25,6 +25,6 @@ build/
 out/
 .next/
 
-# Dependencies
-package-lock.json
-yarn.lock
+# OS files
+.DS_Store
+Thumbs.db
