@@ -30,6 +30,7 @@ app.use(helmet({
 }));
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  'https://pohela-boishak.onrender.com',
   'http://localhost:3000',
   'http://localhost:4000',
   'http://localhost:6000' // Supporting the previously requested port too
