@@ -175,3 +175,134 @@ export const sendAdminStockAlert = async (item) => {
     htmlContent: html,
   });
 };
+
+export const sendOrderCompletedEmail = async (order) => {
+  const parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #0a0a1a; font-family: 'Hind Siliguri', Arial, sans-serif;">
+      <div style="max-width: 600px; margin: 20px auto; background: linear-gradient(135deg, #0f1f0f 0%, #1a2e1a 100%); border-radius: 20px; overflow: hidden; border: 1px solid #1e4d1e;">
+        <div style="background: linear-gradient(135deg, #16a34a, #15803d, #4ade80); padding: 40px 30px; text-align: center;">
+          <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+            <span style="font-size: 40px;">✅</span>
+          </div>
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-family: 'Hind Siliguri', sans-serif;">অর্ডার সম্পন্ন হয়েছে!</h1>
+          <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 15px;">পহেলা বৈশাখ স্টল — ICE বিভাগ</p>
+        </div>
+        <div style="padding: 36px 30px;">
+          <div style="background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); border-radius: 14px; padding: 20px; margin-bottom: 28px; text-align: center;">
+            <p style="color: #86efac; margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">অর্ডার নম্বর</p>
+            <p style="color: #4ade80; font-size: 28px; font-weight: 700; margin: 0;">#${order.order_number}</p>
+          </div>
+          <p style="color: #a0a0b0; margin: 0 0 6px; font-size: 14px;">প্রিয়,</p>
+          <p style="color: #ffffff; margin: 0 0 24px; font-size: 20px; font-weight: 600;">${order.customer_name}</p>
+          <p style="color: #d0d0e0; margin: 0 0 24px; line-height: 1.7; font-size: 15px;">
+            আপনার অর্ডারটি সংগ্রহ করার জন্য ধন্যবাদ।
+          </p>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; border-radius: 12px; overflow: hidden;">
+            <thead>
+              <tr style="background: rgba(74,222,128,0.15);">
+                <th style="padding: 12px 16px; text-align: left; color: #4ade80; font-size: 13px; border-bottom: 1px solid rgba(74,222,128,0.2);">আইটেম</th>
+                <th style="padding: 12px 16px; text-align: center; color: #4ade80; font-size: 13px; border-bottom: 1px solid rgba(74,222,128,0.2);">পরিমাণ</th>
+                <th style="padding: 12px 16px; text-align: right; color: #4ade80; font-size: 13px; border-bottom: 1px solid rgba(74,222,128,0.2);">মূল্য</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${parsedItems.map(item => `
+                <tr>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0;">${item.name}</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0; text-align: center;">${item.quantity}</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #ffd700; text-align: right; font-weight: bold;">৳${item.price * item.quantity}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div style="background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #e0e0e0; font-size: 16px;">মোট পরিমাণ</span>
+            <span style="color: #4ade80; font-size: 26px; font-weight: 700;">৳${order.total_amount}</span>
+          </div>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+          <p style="color: #555; margin: 0; font-size: 12px;">© ২০২৬ ICE বিভাগ | পহেলা বৈশাখ ১৪৩৩ 🌸</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: order.customer_email,
+    subject: `✅ অর্ডার সম্পন্ন — #${order.order_number} | পহেলা বৈশাখ ICE স্টল`,
+    htmlContent: html,
+  });
+};
+
+export const sendOrderCancelledEmail = async (order) => {
+  const parsedItems = typeof order.items === 'string' ? JSON.parse(order.items) : order.items;
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #0a0a1a; font-family: 'Hind Siliguri', Arial, sans-serif;">
+      <div style="max-width: 600px; margin: 20px auto; background: linear-gradient(135deg, #1f0a0a 0%, #2e1010 100%); border-radius: 20px; overflow: hidden; border: 1px solid #4d1e1e;">
+        <div style="background: linear-gradient(135deg, #dc2626, #b91c1c, #f87171); padding: 40px 30px; text-align: center;">
+          <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+            <span style="font-size: 40px;">❌</span>
+          </div>
+          <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-family: 'Hind Siliguri', sans-serif;">অর্ডার বাতিল হয়েছে</h1>
+          <p style="color: rgba(255,255,255,0.85); margin: 8px 0 0; font-size: 15px;">পহেলা বৈশাখ স্টল — ICE বিভাগ</p>
+        </div>
+        <div style="padding: 36px 30px;">
+          <div style="background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); border-radius: 14px; padding: 20px; margin-bottom: 28px; text-align: center;">
+            <p style="color: #fca5a5; margin: 0 0 6px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">অর্ডার নম্বর</p>
+            <p style="color: #f87171; font-size: 28px; font-weight: 700; margin: 0;">#${order.order_number}</p>
+          </div>
+          <p style="color: #a0a0b0; margin: 0 0 6px; font-size: 14px;">প্রিয়,</p>
+          <p style="color: #ffffff; margin: 0 0 24px; font-size: 20px; font-weight: 600;">${order.customer_name}</p>
+          <p style="color: #d0d0e0; margin: 0 0 24px; line-height: 1.7; font-size: 15px; font-weight: bold; color: #fca5a5;">
+            স্টক শেষ: ${parsedItems.map(item => item.name).join(', ')}
+          </p>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+            <thead>
+              <tr style="background: rgba(248,113,113,0.15);">
+                <th style="padding: 12px 16px; text-align: left; color: #f87171; font-size: 13px; border-bottom: 1px solid rgba(248,113,113,0.2);">আইটেম</th>
+                <th style="padding: 12px 16px; text-align: center; color: #f87171; font-size: 13px; border-bottom: 1px solid rgba(248,113,113,0.2);">পরিমাণ</th>
+                <th style="padding: 12px 16px; text-align: right; color: #f87171; font-size: 13px; border-bottom: 1px solid rgba(248,113,113,0.2);">মূল্য</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${parsedItems.map(item => `
+                <tr>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0;">${item.name}</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e0e0e0; text-align: center;">${item.quantity}</td>
+                  <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fca5a5; text-align: right; font-weight: bold;">৳${item.price * item.quantity}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          <div style="background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); border-radius: 12px; padding: 16px 20px; text-align: right;">
+            <span style="color: #fca5a5; font-size: 20px; font-weight: 700;">৳${order.total_amount} (বাতিল)</span>
+          </div>
+        </div>
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+          <p style="color: #555; margin: 0; font-size: 12px;">© ২০২৬ ICE বিভাগ | পহেলা বৈশাখ ১৪৩৩ 🌸</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: order.customer_email,
+    subject: `❌ অর্ডার বাতিল — #${order.order_number} | পহেলা বৈশাখ ICE স্টল`,
+    htmlContent: html,
+  });
+};

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { query } from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
-import { sendOrderConfirmation, sendAdminNewOrderNotification } from '../services/email.js';
+import { sendOrderConfirmation, sendAdminNewOrderNotification, sendOrderCompletedEmail, sendOrderCancelledEmail } from '../services/email.js';
 
 const router = Router();
 
@@ -109,14 +109,14 @@ router.get('/', authenticateToken, async (req, res) => {
 router.patch('/:id/status', authenticateToken, async (req, res) => {
   try {
     const { status } = req.body;
-    const validStatuses = ['অপেক্ষমান', 'নিশ্চিত', 'সম্পন্ন', 'বাতিল'];
+    const validStatuses = ['অপেক্ষমান', 'সম্পন্ন', 'বাতিল'];
 
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ message: 'অবৈধ স্ট্যাটাস।' });
     }
 
     const result = await query(
-      'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
+      'UPDATE orders SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
       [status, req.params.id]
     );
 
@@ -124,8 +124,18 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'অর্ডার পাওয়া যায়নি।' });
     }
 
-    res.json({ message: 'অর্ডার স্ট্যাটাস আপডেট হয়েছে!', order: result.rows[0] });
+    const order = result.rows[0];
+
+    // Send email notifications based on status
+    if (status === 'সম্পন্ন') {
+      sendOrderCompletedEmail(order).catch(err => console.error('সম্পন্ন ইমেইল সমস্যা:', err));
+    } else if (status === 'বাতিল') {
+      sendOrderCancelledEmail(order).catch(err => console.error('বাতিল ইমেইল সমস্যা:', err));
+    }
+
+    res.json({ message: 'অর্ডার স্ট্যাটাস আপডেট হয়েছে!', order });
   } catch (error) {
+    console.error('স্ট্যাটাস আপডেট সমস্যা:', error);
     res.status(500).json({ message: 'স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।' });
   }
 });

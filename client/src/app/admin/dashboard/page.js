@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
@@ -11,23 +11,292 @@ import {
   getAccessToken,
 } from "@/lib/api";
 
-const ORDER_STATUSES = ["অপেক্ষমান", "নিশ্চিত", "সম্পন্ন", "বাতিল"];
+/* ─── Constants ─────────────────────────────────────── */
+const ACTION_STATUSES = ["অপেক্ষমান", "সম্পন্ন", "বাতিল"];
 const CATEGORIES = ["খাবার", "জুস", "কম্বো", "অন্যান্য"];
 
-const statusConfig = {
-  অপেক্ষমান: { icon: "⏳", color: "text-amber-400", bg: "bg-amber-500/20", border: "border-amber-500/30", label: "অপেক্ষমান" },
-  নিশ্চিত: { icon: "✓", color: "text-blue-400", bg: "bg-blue-500/20", border: "border-blue-500/30", label: "নিশ্চিত" },
-  সম্পন্ন: { icon: "✓✓", color: "text-green-400", bg: "bg-green-500/20", border: "border-green-500/30", label: "সম্পন্ন" },
-  বাতিল: { icon: "✕", color: "text-red-400", bg: "bg-red-500/20", border: "border-red-500/30", label: "বাতিল" },
+const STATUS_CFG = {
+  অপেক্ষমান: {
+    label: "অপেক্ষমান",
+    emoji: "⏳",
+    color: "#F59E0B",
+    bg: "rgba(245,158,11,0.15)",
+    border: "rgba(245,158,11,0.35)",
+    ring: "rgba(245,158,11,0.5)",
+    text: "#FCD34D",
+  },
+  সম্পন্ন: {
+    label: "সম্পন্ন",
+    emoji: "✅",
+    color: "#10B981",
+    bg: "rgba(16,185,129,0.15)",
+    border: "rgba(16,185,129,0.35)",
+    ring: "rgba(16,185,129,0.5)",
+    text: "#6EE7B7",
+  },
+  বাতিল: {
+    label: "বাতিল",
+    emoji: "❌",
+    color: "#DC2626",
+    bg: "rgba(220,38,38,0.15)",
+    border: "rgba(220,38,38,0.35)",
+    ring: "rgba(220,38,38,0.5)",
+    text: "#FCA5A5",
+  },
+  নিশ্চিত: {
+    label: "নিশ্চিত",
+    emoji: "✓",
+    color: "#3B82F6",
+    bg: "rgba(59,130,246,0.15)",
+    border: "rgba(59,130,246,0.35)",
+    ring: "rgba(59,130,246,0.5)",
+    text: "#93C5FD",
+  },
 };
 
-const statCards = [
-  { label: "মোট অর্ডার", icon: "📦", color: "from-blue-500/30 to-blue-600/20", border: "border-blue-500/20", iconBg: "bg-blue-500/20", iconColor: "text-blue-400" },
-  { label: "আজকার", icon: "📅", color: "from-green-500/30 to-green-600/20", border: "border-green-500/20", iconBg: "bg-green-500/20", iconColor: "text-green-400" },
-  { label: "অপেক্ষমান", icon: "⏳", color: "from-amber-500/30 to-amber-600/20", border: "border-amber-500/20", iconBg: "bg-amber-500/20", iconColor: "text-amber-400" },
-  { label: "মোট আয়", icon: "💰", color: "from-purple-500/30 to-purple-600/20", border: "border-purple-500/20", iconBg: "bg-purple-500/20", iconColor: "text-purple-400" },
-];
+/* ─── Utility component: Circular action button ───── */
+function CircleBtn({ label, emoji, cfg, isActive, onClick, size = 64 }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      whileHover={!isActive ? { scale: 1.12, y: -2 } : {}}
+      whileTap={!isActive ? { scale: 0.92 } : {}}
+      disabled={isActive}
+      title={label}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        border: `2px solid ${isActive ? cfg.border : "rgba(255,255,255,0.1)"}`,
+        background: isActive ? cfg.bg : "rgba(255,255,255,0.04)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: isActive ? "default" : "pointer",
+        gap: 2,
+        position: "relative",
+        transition: "all 0.25s ease",
+        boxShadow: isActive ? `0 0 20px ${cfg.ring}` : "none",
+        flexShrink: 0,
+      }}
+    >
+      {isActive && (
+        <motion.span
+          animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          style={{
+            position: "absolute",
+            inset: -4,
+            borderRadius: "50%",
+            border: `2px solid ${cfg.color}`,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+      <span style={{ fontSize: 22, lineHeight: 1 }}>{emoji}</span>
+      <span style={{ fontSize: 9, color: isActive ? cfg.text : "rgba(255,255,255,0.4)", fontWeight: 700, letterSpacing: "0.05em", lineHeight: 1, textAlign: "center", maxWidth: 52 }}>
+        {label}
+      </span>
+    </motion.button>
+  );
+}
 
+/* ─── Stat card ──────────────────────────────────── */
+function StatCard({ label, value, icon, accentColor, delay }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      whileHover={{ y: -4 }}
+      style={{
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderRadius: 22,
+        padding: "20px 22px",
+        position: "relative",
+        overflow: "hidden",
+        flex: "1 1 140px",
+        minWidth: 130,
+      }}
+    >
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)` }} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+        <div>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", margin: "0 0 6px" }}>{label}</p>
+          <p style={{ color: "#fff", fontSize: 32, fontWeight: 900, margin: 0, lineHeight: 1, letterSpacing: "-1px" }}>{value}</p>
+        </div>
+        <div style={{
+          width: 52,
+          height: 52,
+          borderRadius: "50%",
+          background: `rgba(${accentColor.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.12)`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 24,
+          flexShrink: 0,
+          border: `1px solid rgba(${accentColor.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.2)`,
+        }}>
+          {icon}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Order Card ─────────────────────────────────── */
+function OrderCard({ order, onStatusChange }) {
+  const items = typeof order.items === "string" ? JSON.parse(order.items) : order.items;
+  const cfg = STATUS_CFG[order.status] || STATUS_CFG["অপেক্ষমান"];
+  const [updating, setUpdating] = useState(false);
+
+  const handleAction = async (status) => {
+    if (order.status === status || updating) return;
+    setUpdating(true);
+    await onStatusChange(order.id, status);
+    setUpdating(false);
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.94 }}
+      style={{
+        background: "rgba(255,255,255,0.025)",
+        border: `1px solid rgba(255,255,255,0.07)`,
+        borderRadius: 24,
+        overflow: "hidden",
+        position: "relative",
+        backdropFilter: "blur(20px)",
+        transition: "border-color 0.3s",
+      }}
+      whileHover={{ borderColor: "rgba(245,158,11,0.2)" }}
+    >
+      {/* Top status stripe */}
+      <div style={{ height: 3, background: `linear-gradient(90deg, ${cfg.color}, transparent)` }} />
+
+      <div style={{ padding: "22px 24px" }}>
+        {/* Header row */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span style={{
+              display: "inline-block",
+              padding: "4px 12px",
+              borderRadius: 100,
+              background: "rgba(245,158,11,0.12)",
+              border: "1px solid rgba(245,158,11,0.25)",
+              color: "#F59E0B",
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: "0.1em",
+              marginBottom: 8,
+            }}>
+              #{order.order_number}
+            </span>
+            <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 800, margin: "0 0 6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: "'Hind Siliguri', sans-serif" }}>
+              {order.customer_name}
+            </h3>
+            <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, margin: "0 0 2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              📧 {order.customer_email}
+            </p>
+            <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, margin: 0 }}>
+              📞 {order.customer_phone}
+            </p>
+          </div>
+          <div style={{ textAlign: "right", flexShrink: 0, paddingLeft: 12 }}>
+            <p style={{ fontSize: 28, fontWeight: 900, color: "#F59E0B", margin: "0 0 4px", lineHeight: 1 }}>
+              ৳{Math.round(parseFloat(order.total_amount))}
+            </p>
+            <span style={{
+              display: "inline-block",
+              padding: "3px 10px",
+              borderRadius: 100,
+              background: order.payment_method === "অনলাইন" ? "rgba(59,130,246,0.15)" : "rgba(16,185,129,0.15)",
+              border: `1px solid ${order.payment_method === "অনলাইন" ? "rgba(59,130,246,0.3)" : "rgba(16,185,129,0.3)"}`,
+              color: order.payment_method === "অনলাইন" ? "#93C5FD" : "#6EE7B7",
+              fontSize: 10,
+              fontWeight: 700,
+            }}>
+              {order.payment_method}
+            </span>
+            <p style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, margin: "4px 0 0" }}>
+              {new Date(order.created_at).toLocaleString("bn-BD", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}
+            </p>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "0 0 14px" }} />
+
+        {/* Items */}
+        <div style={{ marginBottom: 16 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.15em", margin: "0 0 8px" }}>
+            আইটেমস · {items.length} টি
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {items.map((item, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12, padding: "8px 12px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.25)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900, color: "#F59E0B", flexShrink: 0 }}>
+                    {item.quantity}
+                  </span>
+                  <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 140, fontFamily: "'Hind Siliguri', sans-serif" }}>
+                    {item.name}
+                  </span>
+                </div>
+                <span style={{ fontSize: 13, color: "#F59E0B", fontWeight: 700, flexShrink: 0 }}>
+                  ৳{Math.round(item.price * item.quantity)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Notes */}
+        {order.notes && (
+          <div style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.12)", borderRadius: 12, padding: "10px 14px", marginBottom: 16 }}>
+            <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(245,158,11,0.6)", textTransform: "uppercase", letterSpacing: "0.1em", margin: "0 0 4px" }}>বিশেষ নোট</p>
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", margin: 0, fontStyle: "italic", fontFamily: "'Hind Siliguri', sans-serif" }}>{order.notes}</p>
+          </div>
+        )}
+
+        {/* Divider */}
+        <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "0 0 16px" }} />
+
+        {/* ═══ 3 CIRCLE ACTION BUTTONS ═══ */}
+        <div>
+          <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.15em", textAlign: "center", margin: "0 0 12px" }}>
+            স্ট্যাটাস পরিবর্তন করুন
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", gap: 16 }}>
+            {ACTION_STATUSES.map((s) => (
+              <div key={s} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                <CircleBtn
+                  label={s}
+                  emoji={STATUS_CFG[s].emoji}
+                  cfg={STATUS_CFG[s]}
+                  isActive={order.status === s}
+                  onClick={() => handleAction(s)}
+                />
+              </div>
+            ))}
+          </div>
+          {updating && (
+            <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textAlign: "center", margin: "8px 0 0" }}>
+              আপডেট হচ্ছে...
+            </p>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Main Dashboard ─────────────────────────────── */
 export default function AdminDashboard() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("orders");
@@ -42,25 +311,24 @@ export default function AdminDashboard() {
   const [itemSearch, setItemSearch] = useState("");
   const [editItem, setEditItem] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "খাবার",
-    combo_items: "",
-    sort_order: "0",
-  });
+  const [formData, setFormData] = useState({ name: "", description: "", price: "", category: "খাবার", combo_items: "", sort_order: "0" });
   const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [newOrderCount, setNewOrderCount] = useState(0); // badge dot in nav
+  const ordersRef = useRef([]); // track latest fetched orders for diff
+  const pollRef = useRef(null);
+
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 4000);
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem("adminUser");
     const token = getAccessToken();
-    if (!stored && !token) {
-      router.push("/admin/login");
-      return;
-    }
+    if (!stored && !token) { router.push("/admin/login"); return; }
     if (stored) setUser(JSON.parse(stored));
     checkAuth();
   }, []);
@@ -82,11 +350,12 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const [ordersRes, itemsRes, statsRes] = await Promise.all([
-        orderAPI.getAll({ limit: 100 }),
+        orderAPI.getAll({ limit: 150 }),
         foodAPI.getAll(),
         orderAPI.getStats(),
       ]);
       setOrders(ordersRes.data.orders);
+      ordersRef.current = ordersRes.data.orders;
       setItems(itemsRes.data.items);
       setStats(statsRes.data);
     } catch (err) {
@@ -96,10 +365,46 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  const handleLogout = async () => {
+  // Silent poll — fetch only orders+stats, no loading spinner
+  const silentPoll = useCallback(async () => {
     try {
-      await authAPI.logout();
-    } catch { }
+      const [ordersRes, statsRes] = await Promise.all([
+        orderAPI.getAll({ limit: 150 }),
+        orderAPI.getStats(),
+      ]);
+      const fresh = ordersRes.data.orders;
+      const prev = ordersRef.current;
+      const newCount = fresh.length - prev.length;
+      if (newCount > 0) {
+        // New orders detected!
+        showToast(`🔔 ${newCount}টি নতুন অর্ডার এসেছে!`, "new");
+        setNewOrderCount((c) => c + newCount);
+      }
+      ordersRef.current = fresh;
+      setOrders(fresh);
+      setStats(statsRes.data);
+    } catch {
+      // silent — don't break UI on poll error
+    }
+  }, []);
+
+  // Start/stop polling when authenticated
+  useEffect(() => {
+    const POLL_INTERVAL = 15000; // 15 seconds
+    const startPolling = () => {
+      if (pollRef.current) return;
+      pollRef.current = setInterval(() => {
+        if (!document.hidden) silentPoll();
+      }, POLL_INTERVAL);
+    };
+    startPolling();
+    return () => {
+      if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
+    };
+  }, [silentPoll]);
+
+  const handleLogout = async () => {
+    try { await authAPI.logout(); } catch {}
     setAccessToken(null);
     localStorage.removeItem("adminUser");
     router.push("/admin/login");
@@ -108,69 +413,53 @@ export default function AdminDashboard() {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await orderAPI.updateStatus(orderId, newStatus);
-      setOrders((prev) =>
-        prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-      );
-    } catch (err) {
-      alert("স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।");
+      setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)));
+      showToast(`অর্ডার "${newStatus}" করা হয়েছে ✓`);
+      // refresh stats
+      const statsRes = await orderAPI.getStats();
+      setStats(statsRes.data);
+    } catch {
+      showToast("স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।", "error");
     }
   };
 
   const handleStockToggle = async (itemId) => {
     try {
       const { data } = await foodAPI.toggleStock(itemId);
-      setItems((prev) =>
-        prev.map((i) => (i.id === itemId ? data.item : i))
-      );
-    } catch (err) {
-      alert("স্টক আপডেট করতে সমস্যা হয়েছে।");
+      setItems((prev) => prev.map((i) => (i.id === itemId ? data.item : i)));
+    } catch {
+      showToast("স্টক আপডেট করতে সমস্যা হয়েছে।", "error");
     }
   };
 
   const handleDeleteItem = async (itemId) => {
-    if (!confirm("আপনি কি নিশ্চিত এই আইটেমটি মুছে ফেলতে চান?")) return;
+    if (!confirm("আইটেমটি মুছে ফেলবেন?")) return;
     try {
       await foodAPI.delete(itemId);
       setItems((prev) => prev.filter((i) => i.id !== itemId));
-    } catch (err) {
-      alert("আইটেম মুছতে সমস্যা হয়েছে।");
+      showToast("আইটেম মুছে ফেলা হয়েছে।");
+    } catch {
+      showToast("আইটেম মুছতে সমস্যা হয়েছে।", "error");
     }
   };
 
   const handleEditClick = (item) => {
     setEditItem(item);
-    setFormData({
-      name: item.name,
-      description: item.description || "",
-      price: String(item.price),
-      category: item.category,
-      combo_items: item.combo_items ? item.combo_items.join(", ") : "",
-      sort_order: String(item.sort_order || 0),
-    });
+    setFormData({ name: item.name, description: item.description || "", price: String(item.price), category: item.category, combo_items: item.combo_items ? item.combo_items.join(", ") : "", sort_order: String(item.sort_order || 0) });
     setImageFile(null);
     setShowAddForm(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleAddNew = () => {
     setEditItem(null);
-    setFormData({
-      name: "",
-      description: "",
-      price: "",
-      category: "খাবার",
-      combo_items: "",
-      sort_order: "0",
-    });
+    setFormData({ name: "", description: "", price: "", category: "খাবার", combo_items: "", sort_order: "0" });
     setImageFile(null);
     setShowAddForm(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setActionLoading(true);
-
     try {
       const fd = new FormData();
       fd.append("name", formData.name);
@@ -178,349 +467,344 @@ export default function AdminDashboard() {
       fd.append("price", formData.price);
       fd.append("category", formData.category);
       fd.append("sort_order", formData.sort_order);
-
-      if (formData.combo_items) {
-        fd.append(
-          "combo_items",
-          JSON.stringify(
-            formData.combo_items.split(",").map((s) => s.trim())
-          )
-        );
-      }
-
-      if (imageFile) {
-        fd.append("image", imageFile);
-      }
+      if (formData.combo_items) fd.append("combo_items", JSON.stringify(formData.combo_items.split(",").map((s) => s.trim())));
+      if (imageFile) fd.append("image", imageFile);
 
       if (editItem) {
         fd.append("in_stock", String(editItem.in_stock));
         const { data } = await foodAPI.update(editItem.id, fd);
-        setItems((prev) =>
-          prev.map((i) => (i.id === editItem.id ? data.item : i))
-        );
+        setItems((prev) => prev.map((i) => (i.id === editItem.id ? data.item : i)));
       } else {
         const { data } = await foodAPI.create(fd);
         setItems((prev) => [...prev, data.item]);
       }
-
       setShowAddForm(false);
       setEditItem(null);
+      showToast(editItem ? "আইটেম আপডেট হয়েছে ✓" : "নতুন আইটেম যোগ হয়েছে ✓");
     } catch (err) {
-      alert(
-        err.response?.data?.message || "আইটেম সেভ করতে সমস্যা হয়েছে।"
-      );
+      showToast(err.response?.data?.message || "আইটেম সেভ করতে সমস্যা হয়েছে।", "error");
     } finally {
       setActionLoading(false);
     }
   };
 
   const filteredOrders = useMemo(() => {
-    let result = orderFilter === "সব"
-      ? orders
-      : orders.filter((o) => o.status === orderFilter);
-
+    let result = orderFilter === "সব" ? orders : orders.filter((o) => o.status === orderFilter);
     if (orderSearch) {
-      const search = orderSearch.toLowerCase();
-      result = result.filter((o) =>
-        o.customer_name.toLowerCase().includes(search) ||
-        o.customer_email.toLowerCase().includes(search) ||
-        o.order_number.toString().includes(search)
-      );
+      const s = orderSearch.toLowerCase();
+      result = result.filter((o) => o.customer_name.toLowerCase().includes(s) || o.customer_email.toLowerCase().includes(s) || o.order_number.toString().includes(s));
     }
     return result;
   }, [orders, orderFilter, orderSearch]);
 
   const filteredItems = useMemo(() => {
     if (!itemSearch) return items;
-    const search = itemSearch.toLowerCase();
-    return items.filter((item) =>
-      item.name.toLowerCase().includes(search) ||
-      item.description?.toLowerCase().includes(search) ||
-      item.category.toLowerCase().includes(search)
-    );
+    const s = itemSearch.toLowerCase();
+    return items.filter((item) => item.name.toLowerCase().includes(s) || item.description?.toLowerCase().includes(s) || item.category.toLowerCase().includes(s));
   }, [items, itemSearch]);
 
+  /* ── Loading screen ── */
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#030712] flex items-center justify-center">
-        <div className="text-center space-y-6">
+      <div style={{ minHeight: "100vh", background: "#070614", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
           <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-20 h-20 border-4 border-white/10 border-t-[#ff6b35] rounded-full mx-auto"
+            transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+            style={{ width: 72, height: 72, border: "3px solid rgba(245,158,11,0.15)", borderTopColor: "#F59E0B", borderRadius: "50%", margin: "0 auto 20px" }}
           />
-          <p className="text-[#ff6b35] font-bold text-lg animate-pulse">ডাটা লোড হচ্ছে...</p>
+          <motion.p animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }} style={{ color: "#F59E0B", fontWeight: 700, fontSize: 16, fontFamily: "'Hind Siliguri', sans-serif" }}>
+            ডাটা লোড হচ্ছে...
+          </motion.p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[#030712] text-gray-200 font-bangla relative max-w-[100vw] overflow-x-hidden">
-      {/* Background Effects */}
-      <div className="fixed top-0 left-[10%] w-[500px] h-[500px] bg-[#ff6b35]/8 rounded-full blur-[150px] pointer-events-none" />
-      <div className="fixed bottom-0 right-[10%] w-[500px] h-[500px] bg-[#e63946]/5 rounded-full blur-[150px] pointer-events-none" />
-      
-      {/* Grid Pattern */}
-      <div className="fixed inset-0 pointer-events-none opacity-30" style={{
-        backgroundImage: `
-          linear-gradient(rgba(255,107,53,0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255,107,53,0.03) 1px, transparent 1px)
-        `,
-        backgroundSize: '50px 50px'
-      }} />
+  const inputStyle = {
+    width: "100%",
+    padding: "13px 18px",
+    borderRadius: 100,
+    background: "rgba(255,255,255,0.05)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "#fff",
+    fontSize: 14,
+    outline: "none",
+    boxSizing: "border-box",
+    fontFamily: "'Hind Siliguri', Arial, sans-serif",
+    transition: "border-color 0.3s",
+  };
+  const textareaStyle = {
+    ...inputStyle,
+    borderRadius: 18,
+    resize: "none",
+    minHeight: 110,
+  };
+  const labelStyle = {
+    display: "block",
+    fontSize: 11,
+    fontWeight: 700,
+    color: "rgba(255,255,255,0.4)",
+    textTransform: "uppercase",
+    letterSpacing: "0.12em",
+    marginBottom: 7,
+  };
 
-      {/* Navigation */}
+  /* ─────────────────────────── RENDER ─────────────────────────── */
+  return (
+    <div style={{ minHeight: "100vh", background: "#070614", color: "#f0f0f0", fontFamily: "'Inter', 'Hind Siliguri', sans-serif", position: "relative" }}>
+
+      {/* Ambient background */}
+      <div style={{ position: "fixed", top: "-10%", left: "5%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(245,158,11,0.06), transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", bottom: "-10%", right: "5%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(220,38,38,0.05), transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }} />
+
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: "-50%" }}
+            animate={{ opacity: 1, y: 0, x: "-50%" }}
+            exit={{ opacity: 0, y: -20, x: "-50%" }}
+            style={{
+              position: "fixed",
+              top: 20,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 9999,
+              background:
+                toast.type === "error" ? "rgba(220,38,38,0.97)" :
+                toast.type === "new"   ? "rgba(245,158,11,0.97)" :
+                "rgba(16,185,129,0.97)",
+              backdropFilter: "blur(20px)",
+              border: `1px solid ${
+                toast.type === "error" ? "rgba(220,38,38,0.5)" :
+                toast.type === "new"   ? "rgba(245,158,11,0.5)" :
+                "rgba(16,185,129,0.5)"
+              }`,
+              borderRadius: 100,
+              padding: "12px 24px",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 14,
+              whiteSpace: "nowrap",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+              fontFamily: "'Hind Siliguri', sans-serif",
+            }}
+          >
+            {toast.msg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── TOP NAV ─── */}
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
+        initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-0 z-50 bg-[#030712]/90 backdrop-blur-2xl border-b border-white/[0.06]"
+        style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          background: "rgba(7,6,20,0.85)",
+          backdropFilter: "blur(24px)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          padding: "0 24px",
+        }}
       >
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-4 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#ff6b35] to-[#e63946] flex items-center justify-center text-white font-bold shadow-xl shadow-[#ff6b35]/25">
-              ⚙️
-            </div>
+        <div style={{ maxWidth: 1400, margin: "0 auto", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+          {/* Brand */}
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <motion.div
+              animate={{ boxShadow: ["0 0 0px rgba(245,158,11,0.3)", "0 0 20px rgba(245,158,11,0.5)", "0 0 0px rgba(245,158,11,0.3)"] }}
+              transition={{ duration: 3, repeat: Infinity }}
+              style={{ width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #F59E0B, #DC2626)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}
+            >
+              <img src="/images/depLogo.png" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
+            </motion.div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-wide">অ্যাডমিন প্যানেল</h1>
-              <p className="text-[10px] sm:text-xs text-gray-500 font-semibold uppercase tracking-[0.15em]">Pohela Boishakh Admin</p>
+              <h1 style={{ fontSize: 18, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: "-0.3px" }}>অ্যাডমিন প্যানেল</h1>
+              <p style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", margin: 0, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.15em" }}>Pohela Boishakh · ICE</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+
+          {/* Right controls */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+
+            {/* New order live badge */}
+            {newOrderCount > 0 && (
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                onClick={() => { setNewOrderCount(0); setActiveTab("orders"); setOrderFilter("সব"); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7,
+                  background: "rgba(245,158,11,0.15)",
+                  border: "1px solid rgba(245,158,11,0.4)",
+                  borderRadius: 100, padding: "7px 14px",
+                  cursor: "pointer",
+                }}
+              >
+                <motion.span
+                  animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
+                  transition={{ duration: 1.2, repeat: Infinity }}
+                  style={{ width: 8, height: 8, borderRadius: "50%", background: "#F59E0B", display: "inline-block", flexShrink: 0 }}
+                />
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#F59E0B", whiteSpace: "nowrap", fontFamily: "'Hind Siliguri', sans-serif" }}>
+                  {newOrderCount} নতুন অর্ডার
+                </span>
+              </motion.div>
+            )}
+
+            {/* Refresh circle btn */}
+            <motion.button
+              onClick={() => { loadData(); setNewOrderCount(0); }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92, rotate: 180 }}
+              title="রিফ্রেশ"
+              style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}
+            >
+              🔄
+            </motion.button>
+
+            {/* Visit site circle btn */}
             <motion.button
               onClick={() => router.push("/")}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="hidden sm:flex items-center gap-2 text-sm font-semibold text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 px-5 py-2.5 rounded-xl border border-white/[0.08] transition-all"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              title="সাইট ভিজিট"
+              style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}
             >
-              🌐 সাইট ভিজিট
+              🌐
             </motion.button>
+
+            {/* Logout circle btn */}
             <motion.button
               onClick={handleLogout}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="px-4 py-2.5 text-sm font-bold bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 rounded-xl transition-all"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              title="লগআউট"
+              style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.25)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}
             >
-              লগআউট
+              🚪
             </motion.button>
           </div>
         </div>
       </motion.nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-10 relative z-10">
-        {/* Stats Grid */}
+      {/* ─── MAIN CONTENT ─── */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "32px 20px 60px" }}>
+
+        {/* ─ Stats Row ─ */}
         {stats && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12"
-          >
-            {statCards.map((stat, idx) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 + 0.2 }}
-                whileHover={{ y: -6, scale: 1.02 }}
-                className={`relative p-6 sm:p-8 rounded-[1.75rem] bg-gradient-to-br ${stat.color} border ${stat.border} overflow-hidden group`}
-              >
-                {/* Glossy effect */}
-                <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                
-                <div className="relative z-10 flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs sm:text-sm font-bold text-gray-300 mb-2 uppercase tracking-wider">{stat.label}</p>
-                    <p className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-                      {idx === 3 ? `৳${Math.round(stats.totalRevenue)}` : 
-                       idx === 1 ? stats.todayOrders :
-                       idx === 2 ? stats.pendingOrders :
-                       stats.totalOrders}
-                    </p>
-                  </div>
-                  <div className={`w-14 h-14 rounded-2xl ${stat.iconBg} flex items-center justify-center text-2xl shadow-lg`}>
-                    {stat.icon}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div style={{ display: "flex", gap: 14, marginBottom: 32, flexWrap: "wrap" }}>
+            <StatCard label="মোট অর্ডার"  value={stats.totalOrders}              icon="📦" accentColor="#3B82F6" delay={0.05} />
+            <StatCard label="আজকের অর্ডার" value={stats.todayOrders}             icon="📅" accentColor="#10B981" delay={0.1}  />
+            <StatCard label="অপেক্ষমান"    value={stats.pendingOrders}           icon="⏳" accentColor="#F59E0B" delay={0.15} />
+            <StatCard label="মোট আয়"      value={`৳${Math.round(stats.totalRevenue)}`} icon="💰" accentColor="#A855F7" delay={0.2}  />
+          </div>
         )}
 
-        {/* Tab Navigation */}
-        <div className="flex gap-3 mb-10 pb-1 overflow-x-auto scrollbar-hide">
+        {/* ─ Tab Bar ─ */}
+        <div style={{ display: "flex", gap: 10, marginBottom: 28, flexWrap: "wrap" }}>
           {[
             { key: "orders", label: "অর্ডার ম্যানেজমেন্ট", icon: "📦" },
-            { key: "menu", label: "মেনু ম্যানেজমেন্ট", icon: "🍽️" },
+            { key: "menu",   label: "মেনু ম্যানেজমেন্ট",   icon: "🍽️" },
           ].map((tab) => (
             <motion.button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className={`px-6 py-4 text-base font-bold flex items-center gap-3 rounded-2xl transition-all whitespace-nowrap ${
-                activeTab === tab.key
-                  ? "bg-gradient-to-r from-[#ff6b35] to-[#e63946] text-white shadow-xl shadow-[#ff6b35]/25"
-                  : "text-gray-400 hover:text-white hover:bg-white/5 border border-white/[0.06]"
-              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                padding: "11px 24px",
+                borderRadius: 100,
+                border: activeTab === tab.key ? "1px solid rgba(245,158,11,0.4)" : "1px solid rgba(255,255,255,0.08)",
+                background: activeTab === tab.key ? "linear-gradient(135deg, rgba(245,158,11,0.2), rgba(220,38,38,0.15))" : "rgba(255,255,255,0.03)",
+                color: activeTab === tab.key ? "#F59E0B" : "rgba(255,255,255,0.4)",
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: activeTab === tab.key ? "0 4px 20px rgba(245,158,11,0.15)" : "none",
+                transition: "all 0.25s",
+                fontFamily: "'Hind Siliguri', sans-serif",
+              }}
             >
-              <span className="text-xl">{tab.icon}</span> {tab.label}
+              <span>{tab.icon}</span> {tab.label}
             </motion.button>
           ))}
         </div>
 
-        {/* Orders Tab */}
+        {/* ═══════════ ORDERS TAB ═══════════ */}
         <AnimatePresence mode="wait">
           {activeTab === "orders" && (
-            <motion.div
-              key="orders"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
-            >
-              {/* Search & Filters */}
-              <div className="flex flex-col xl:flex-row gap-5 justify-between bg-[#0a0a1a]/60 backdrop-blur-xl p-6 rounded-[2rem] border border-white/[0.06]">
-                <div className="w-full xl:max-w-xl">
+            <motion.div key="orders-tab" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+
+              {/* Filter bar */}
+              <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: "14px 18px" }}>
+                {/* Search */}
+                <div style={{ flex: "1 1 240px", position: "relative" }}>
+                  <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", fontSize: 15 }}>🔍</span>
                   <input
                     type="text"
-                    placeholder="🔍 অর্ডার নম্বর, নাম বা ইমেইল খুঁজুন..."
+                    placeholder="নাম, ইমেইল বা অর্ডার নম্বর..."
                     value={orderSearch}
                     onChange={(e) => setOrderSearch(e.target.value)}
-                    className="w-full px-6 py-4 text-base rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all"
+                    style={{ ...inputStyle, paddingLeft: 44 }}
                   />
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex flex-wrap gap-2 bg-white/5 p-2 rounded-2xl border border-white/10 w-full sm:w-auto">
-                    {["সব", ...ORDER_STATUSES].map((s) => (
-                      <button
+
+                {/* Filter pills */}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {["সব", ...ACTION_STATUSES].map((s) => {
+                    const isActive = orderFilter === s;
+                    const count = s === "সব" ? orders.length : orders.filter((o) => o.status === s).length;
+                    const c = s !== "সব" ? STATUS_CFG[s] : null;
+                    return (
+                      <motion.button
                         key={s}
                         onClick={() => setOrderFilter(s)}
-                        className={`flex-1 sm:flex-none px-5 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${
-                          orderFilter === s
-                            ? "bg-gradient-to-r from-[#ff6b35] to-[#e63946] text-white shadow-lg"
-                            : "text-gray-400 hover:text-white hover:bg-white/10"
-                        }`}
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.95 }}
+                        style={{
+                          padding: "8px 16px",
+                          borderRadius: 100,
+                          border: isActive ? `1px solid ${c ? c.border : "rgba(255,255,255,0.3)"}` : "1px solid rgba(255,255,255,0.08)",
+                          background: isActive ? (c ? c.bg : "rgba(255,255,255,0.08)") : "rgba(255,255,255,0.03)",
+                          color: isActive ? (c ? c.text : "#fff") : "rgba(255,255,255,0.4)",
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                          fontFamily: "'Hind Siliguri', sans-serif",
+                          transition: "all 0.2s",
+                          whiteSpace: "nowrap",
+                        }}
                       >
-                        {s} <span className="opacity-70 text-[10px] hidden sm:inline ml-1">({s === "সব" ? orders.length : orders.filter((o) => o.status === s).length})</span>
-                      </button>
-                    ))}
-                  </div>
-                  <motion.button
-                    onClick={loadData}
-                    whileHover={{ rotate: 180 }}
-                    transition={{ duration: 0.5 }}
-                    className="h-14 px-6 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:text-white hover:bg-white/10 transition-all ml-auto sm:ml-0"
-                  >
-                    🔄
-                  </motion.button>
+                        {c && <span>{c.emoji}</span>}
+                        {s}
+                        <span style={{ background: "rgba(255,255,255,0.1)", borderRadius: 100, padding: "1px 7px", fontSize: 10 }}>{count}</span>
+                      </motion.button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Order Cards Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-5 sm:gap-6">
+              {/* Order cards grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 18 }}>
                 <AnimatePresence>
                   {filteredOrders.length > 0 ? (
                     filteredOrders.map((order) => (
-                      <motion.div
-                        key={order.id}
-                        layout
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="relative bg-[#0a0a1a]/80 backdrop-blur-2xl rounded-[2rem] p-6 sm:p-7 hover:border-[#ff6b35]/30 transition-all duration-500 border border-white/[0.06] group"
-                      >
-                        {/* Status glow */}
-                        <div className={`absolute top-0 right-0 w-40 h-40 blur-[60px] opacity-15 pointer-events-none rounded-full ${statusConfig[order.status].bg}`} />
-                        
-                        <div className="flex justify-between items-start mb-5 pb-5 border-b border-white/[0.06]">
-                          <div className="flex-1 min-w-0">
-                            <span className="inline-block px-3 py-1.5 rounded-lg text-xs font-black bg-[#ff6b35]/20 text-[#ff6b35] mb-3 border border-[#ff6b35]/30">
-                              #{order.order_number}
-                            </span>
-                            <h3 className="font-extrabold text-white text-lg sm:text-xl truncate group-hover:text-[#ff6b35] transition-colors mb-2">{order.customer_name}</h3>
-                            <div className="space-y-2 mt-3">
-                              <p className="text-sm text-gray-300 truncate flex items-center gap-2">
-                                <span className="text-amber-500">📧</span> {order.customer_email}
-                              </p>
-                              <p className="text-sm text-gray-300 truncate flex items-center gap-2">
-                                <span className="text-amber-500">📞</span> {order.customer_phone}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right flex-shrink-0 pl-4">
-                            <p className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-500">৳{Math.round(parseFloat(order.total_amount))}</p>
-                            <span className={`inline-block mt-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                              order.payment_method === 'অনলাইন' 
-                                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
-                                : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            }`}>
-                              {order.payment_method}
-                            </span>
-                            <p className="text-[10px] text-gray-600 mt-3 font-medium">{new Date(order.created_at).toLocaleString("bn-BD", { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex-1 mb-5">
-                          <div className="flex items-center justify-between mb-3">
-                            <p className="text-[10px] sm:text-xs text-gray-400 font-black uppercase tracking-[0.15em] flex items-center gap-2">
-                               <span className="w-5 h-px bg-white/20" /> আইটেমস
-                            </p>
-                            <span className="text-[10px] bg-white/10 px-2.5 py-1 rounded-md text-white font-bold border border-white/20">
-                              {(typeof order.items === "string" ? JSON.parse(order.items) : order.items).length} টি
-                            </span>
-                          </div>
-                          <div className="space-y-2">
-                            {(typeof order.items === "string" ? JSON.parse(order.items) : order.items).map((item, i) => (
-                              <div key={i} className="flex justify-between items-center bg-white/[0.03] border border-white/[0.06] px-4 py-3 rounded-xl group//item hover:bg-white/[0.06] transition-colors">
-                                <div className="flex items-center gap-3">
-                                  <span className="text-[#ff6b35] font-black text-xs bg-[#ff6b35]/20 w-8 h-8 flex items-center justify-center rounded-lg">{item.quantity}</span>
-                                  <span className="text-sm text-white font-semibold truncate max-w-[150px] sm:max-w-[200px]">{item.name}</span>
-                                </div>
-                                <span className="text-sm text-gray-300 font-mono font-bold tracking-wider">৳{Math.round(item.price * item.quantity)}</span>
-                              </div>
-                            ))}
-                          </div>
-                          
-                          {order.notes && (
-                            <div className="mt-5 p-4 rounded-xl bg-amber-500/5 border border-amber-500/15">
-                              <p className="text-[10px] text-amber-500 font-black uppercase tracking-wider mb-2">বিশেষ নোট:</p>
-                              <p className="text-xs text-gray-400 italic leading-relaxed">{order.notes}</p>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="pt-5 border-t border-white/[0.06]">
-                          <p className="text-[10px] text-gray-500 mb-4 font-black uppercase tracking-[0.15em] text-center">স্ট্যাটাস পরিবর্তন</p>
-                          <div className="flex gap-2 justify-between">
-                            {ORDER_STATUSES.map((s) => {
-                              const conf = statusConfig[s];
-                              const isActive = order.status === s;
-                              return (
-                                <motion.button
-                                  key={s}
-                                  onClick={() => handleStatusChange(order.id, s)}
-                                  whileTap={!isActive ? { scale: 0.95 } : {}}
-                                  disabled={isActive}
-                                  className={`py-3 px-2 sm:px-4 rounded-2xl text-[10px] sm:text-xs font-black transition-all flex flex-col items-center gap-2 border flex-1 ${
-                                    isActive
-                                      ? `${conf.bg} ${conf.color} ${conf.border} ring-1 ring-white/10`
-                                      : "bg-white/5 border-white/[0.06] text-gray-400 hover:bg-white/10 hover:text-white"
-                                  }`}
-                                >
-                                  <span className="text-xl">{conf.icon}</span>
-                                  <span className="hidden md:inline leading-none">{s}</span>
-                                </motion.button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </motion.div>
+                      <OrderCard key={order.id} order={order} onStatusChange={handleStatusChange} />
                     ))
                   ) : (
-                    <div className="col-span-full py-28 text-center bg-[#0a0a1a]/60 backdrop-blur-xl rounded-[2.5rem] border border-white/[0.06]">
-                      <div className="text-8xl mb-6 opacity-20">📂</div>
-                      <p className="text-2xl text-gray-500 font-black uppercase tracking-widest">কোনো অর্ডার নেই</p>
-                      <p className="text-gray-600 mt-3 font-medium">নতুন অর্ডারের অপেক্ষায় থাকুন</p>
+                    <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "80px 20px", background: "rgba(255,255,255,0.02)", borderRadius: 24, border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ fontSize: 64, marginBottom: 16, opacity: 0.2 }}>📂</div>
+                      <p style={{ fontSize: 20, color: "rgba(255,255,255,0.3)", fontWeight: 800, fontFamily: "'Hind Siliguri', sans-serif" }}>কোনো অর্ডার নেই</p>
                     </div>
                   )}
                 </AnimatePresence>
@@ -528,170 +812,140 @@ export default function AdminDashboard() {
             </motion.div>
           )}
 
-          {/* Menu Tab */}
+          {/* ═══════════ MENU TAB ═══════════ */}
           {activeTab === "menu" && (
-            <motion.div
-              key="menu"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
-            >
-              {/* Search & Add */}
-              <div className="flex flex-col sm:flex-row gap-5 items-stretch sm:items-center justify-between bg-[#0a0a1a]/60 backdrop-blur-xl p-5 rounded-[2rem] border border-white/[0.06]">
-                <div className="flex-1 w-full sm:max-w-xl">
+            <motion.div key="menu-tab" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}>
+
+              {/* Search + Add btn */}
+              <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 20, padding: "14px 18px" }}>
+                <div style={{ flex: "1 1 200px", position: "relative" }}>
+                  <span style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", fontSize: 15 }}>🔍</span>
                   <input
                     type="text"
-                    placeholder="🔍 মেনু আইটেম খুঁজুন..."
+                    placeholder="মেনু আইটেম খুঁজুন..."
                     value={itemSearch}
                     onChange={(e) => setItemSearch(e.target.value)}
-                    className="w-full text-base py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all"
+                    style={{ ...inputStyle, paddingLeft: 44 }}
                   />
                 </div>
                 <motion.button
                   onClick={handleAddNew}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="py-4 px-8 rounded-2xl bg-gradient-to-r from-[#ff6b35] to-[#e63946] text-white font-bold text-base flex items-center justify-center gap-3 shadow-xl shadow-[#ff6b35]/20"
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.95 }}
+                  style={{
+                    padding: "12px 24px",
+                    borderRadius: 100,
+                    background: "linear-gradient(135deg, #F59E0B, #DC2626)",
+                    border: "none",
+                    color: "#fff",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    boxShadow: "0 6px 24px rgba(245,158,11,0.3)",
+                    whiteSpace: "nowrap",
+                    fontFamily: "'Hind Siliguri', sans-serif",
+                  }}
                 >
-                  <span className="text-2xl">➕</span> নতুন আইটেম
+                  ➕ নতুন আইটেম
                 </motion.button>
               </div>
 
-              {/* Add/Edit Form Overlay */}
+              {/* Add/Edit modal */}
               <AnimatePresence>
                 {showAddForm && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.97, y: -20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.97, y: -20 }}
-                    className="bg-[#0a0a1a]/90 backdrop-blur-2xl rounded-[2.5rem] p-6 sm:p-8 md:p-12 border border-[#ff6b35]/30 relative overflow-hidden"
+                    initial={{ opacity: 0, y: -16, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -16, scale: 0.98 }}
+                    style={{
+                      background: "rgba(255,255,255,0.03)",
+                      backdropFilter: "blur(24px)",
+                      border: "1px solid rgba(245,158,11,0.2)",
+                      borderRadius: 24,
+                      padding: "36px 32px",
+                      marginBottom: 24,
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
                   >
-                    {/* Progress bar */}
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#ff6b35] via-[#e63946] to-[#ff6b35] animate-gradient" />
-                    
-                    <h3 className="text-2xl sm:text-3xl font-black text-white mb-8 flex items-center gap-4">
-                       <span className="bg-[#ff6b35]/20 p-3 rounded-2xl">{editItem ? "✏️" : "➕"}</span> {editItem ? "আইটেম সম্পাদন" : "নতুন আইটেম"}
+                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "linear-gradient(90deg, #F59E0B, #DC2626)" }} />
+                    <h3 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: "0 0 28px", display: "flex", alignItems: "center", gap: 12, fontFamily: "'Hind Siliguri', sans-serif" }}>
+                      <span style={{ width: 44, height: 44, borderRadius: "50%", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
+                        {editItem ? "✏️" : "➕"}
+                      </span>
+                      {editItem ? "আইটেম সম্পাদন" : "নতুন আইটেম"}
                     </h3>
-                    
-                    <form onSubmit={handleSubmitForm} className="space-y-6 sm:space-y-8">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                        <div className="space-y-3">
-                          <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest">পণ্যের নাম <span className="text-[#ff6b35]">*</span></label>
-                          <input
-                            type="text"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all text-lg font-semibold"
-                            placeholder="যেমন: ইলিশ পান্তা"
-                            required
-                          />
+
+                    <form onSubmit={handleSubmitForm} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20 }}>
+                        <div>
+                          <label style={labelStyle}>পণ্যের নাম *</label>
+                          <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="যেমন: ইলিশ পান্তা" required style={inputStyle} />
                         </div>
-                        <div className="space-y-3">
-                          <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest">দাম (৳) <span className="text-[#ff6b35]">*</span></label>
-                          <input
-                            type="number"
-                            value={formData.price}
-                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                            className="w-full py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all text-lg font-semibold"
-                            placeholder="যেমন: ২৫০"
-                            required
-                          />
+                        <div>
+                          <label style={labelStyle}>দাম (৳) *</label>
+                          <input type="number" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} placeholder="যেমন: ২৫০" required style={inputStyle} />
                         </div>
                       </div>
 
-                      <div className="space-y-3">
-                        <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest">বিবরণ</label>
-                        <textarea
-                          value={formData.description}
-                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                          className="w-full resize-none min-h-[120px] py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all text-base"
-                          placeholder="খাবারের আকর্ষণীয় বিবরণ লিখুন..."
-                        />
+                      <div>
+                        <label style={labelStyle}>বিবরণ</label>
+                        <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="খাবারের আকর্ষণীয় বিবরণ লিখুন..." style={textareaStyle} />
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-                        <div className="space-y-3">
-                          <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest">ক্যাটাগরি <span className="text-[#ff6b35]">*</span></label>
-                          <div className="relative">
-                            <select
-                              value={formData.category}
-                              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                              className="w-full py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white appearance-none cursor-pointer font-semibold focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all"
-                            >
-                              {CATEGORIES.map((c) => (
-                                <option key={c} value={c} className="bg-[#0a0a1a] text-white py-2">{c}</option>
-                              ))}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 20 }}>
+                        <div>
+                          <label style={labelStyle}>ক্যাটাগরি *</label>
+                          <div style={{ position: "relative" }}>
+                            <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} style={{ ...inputStyle, appearance: "none", cursor: "pointer" }}>
+                              {CATEGORIES.map((c) => <option key={c} value={c} style={{ background: "#0f0d25" }}>{c}</option>)}
                             </select>
-                            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">▼</div>
+                            <span style={{ position: "absolute", right: 18, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "rgba(255,255,255,0.4)" }}>▼</span>
                           </div>
                         </div>
-                        <div className="space-y-3">
-                          <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest">সর্ট অর্ডার</label>
-                          <input
-                            type="number"
-                            value={formData.sort_order}
-                            onChange={(e) => setFormData({ ...formData, sort_order: e.target.value })}
-                            className="w-full py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all font-semibold"
-                            placeholder="যেমন: ১"
-                          />
+                        <div>
+                          <label style={labelStyle}>সর্ট অর্ডার</label>
+                          <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: e.target.value })} placeholder="0" style={inputStyle} />
                         </div>
-                        <div className="space-y-3">
-                          <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest">ছবি</label>
-                          <div className="relative h-[58px]">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => setImageFile(e.target.files[0])}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                            <div className="w-full h-full flex items-center justify-center gap-3 cursor-pointer bg-white/5 border border-white/10 hover:border-[#ff6b35]/30 hover:bg-white/[0.06] transition-all rounded-2xl">
-                              <span className="text-xl">{imageFile ? "✅" : "📸"}</span>
-                              <span className="font-semibold text-sm truncate px-2">{imageFile ? "নির্বাচিত" : "আপলোড করুন"}</span>
+                        <div>
+                          <label style={labelStyle}>ছবি</label>
+                          <div style={{ position: "relative", height: 48 }}>
+                            <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files[0])} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }} />
+                            <div style={{ ...inputStyle, height: "100%", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "0 18px" }}>
+                              <span>{imageFile ? "✅" : "📸"}</span>
+                              <span style={{ fontSize: 13 }}>{imageFile ? "নির্বাচিত" : "আপলোড করুন"}</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       {formData.category === "কম্বো" && (
-                        <motion.div 
-                          initial={{ opacity: 0, height: 0 }} 
-                          animate={{ opacity: 1, height: "auto" }}
-                          className="space-y-3"
-                        >
-                          <label className="block text-sm font-black text-gray-300 ml-1 uppercase tracking-widest mt-4">কম্বো আইটেমস</label>
-                          <input
-                            type="text"
-                            value={formData.combo_items}
-                            onChange={(e) => setFormData({ ...formData, combo_items: e.target.value })}
-                            placeholder="ভেলপুরি, নিমকি, ফুলঝুরি পিঠা"
-                            className="w-full py-4 px-6 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#ff6b35]/50 focus:bg-white/10 transition-all font-medium"
-                          />
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
+                          <label style={labelStyle}>কম্বো আইটেমস</label>
+                          <input type="text" value={formData.combo_items} onChange={(e) => setFormData({ ...formData, combo_items: e.target.value })} placeholder="ভেলপুরি, নিমকি, ফুলঝুরি পিঠা" style={inputStyle} />
                         </motion.div>
                       )}
 
-                      <div className="flex flex-col-reverse sm:flex-row gap-4 pt-8 border-t border-white/[0.06] mt-8">
+                      <div style={{ display: "flex", gap: 12, paddingTop: 8 }}>
                         <button
                           type="button"
-                          onClick={() => {
-                            setShowAddForm(false);
-                            setEditItem(null);
-                          }}
-                          className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 font-black transition-all text-center tracking-widest"
+                          onClick={() => { setShowAddForm(false); setEditItem(null); }}
+                          style={{ flex: 1, padding: "13px", borderRadius: 100, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)", fontWeight: 700, cursor: "pointer", fontSize: 14, fontFamily: "'Hind Siliguri', sans-serif" }}
                         >
                           বাতিল
                         </button>
                         <motion.button
                           type="submit"
                           disabled={actionLoading}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
-                          className="w-full sm:flex-1 py-4 flex justify-center items-center gap-3 rounded-2xl bg-gradient-to-r from-[#ff6b35] to-[#e63946] text-white font-bold shadow-xl shadow-[#ff6b35]/20"
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.97 }}
+                          style={{ flex: 2, padding: "13px", borderRadius: 100, background: actionLoading ? "rgba(245,158,11,0.4)" : "linear-gradient(135deg, #F59E0B, #DC2626)", border: "none", color: "#fff", fontWeight: 800, cursor: actionLoading ? "not-allowed" : "pointer", fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: actionLoading ? "none" : "0 6px 24px rgba(245,158,11,0.25)", fontFamily: "'Hind Siliguri', sans-serif" }}
                         >
-                          {actionLoading && (
-                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          )}
-                          <span className="text-lg tracking-widest">{editItem ? "আপডেট সংরক্ষণ" : "আইটেম যুক্ত করুন"}</span>
+                          {actionLoading && <motion.span animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} style={{ display: "inline-block", width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%" }} />}
+                          {editItem ? "আপডেট সংরক্ষণ" : "আইটেম যুক্ত করুন"}
                         </motion.button>
                       </div>
                     </form>
@@ -699,8 +953,8 @@ export default function AdminDashboard() {
                 )}
               </AnimatePresence>
 
-              {/* Items Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+              {/* Items grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 18 }}>
                 <AnimatePresence>
                   {filteredItems.length > 0 ? (
                     filteredItems.map((item) => (
@@ -710,65 +964,86 @@ export default function AdminDashboard() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="bg-[#0a0a1a]/80 backdrop-blur-2xl rounded-[2rem] overflow-hidden group flex flex-col hover:border-[#ff6b35]/30 transition-all duration-500 border border-white/[0.06]"
+                        whileHover={{ y: -4 }}
+                        style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 22, overflow: "hidden", display: "flex", flexDirection: "column", transition: "border-color 0.3s" }}
                       >
-                        <div className="relative h-48 sm:h-56 w-full bg-[#050510] overflow-hidden">
+                        {/* Image */}
+                        <div style={{ height: 170, background: "rgba(255,255,255,0.03)", position: "relative", overflow: "hidden" }}>
                           {item.image_url ? (
                             <img
-                              src={item.image_url.startsWith('http') ? item.image_url : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api').replace('/api', '')}${item.image_url}`}
+                              src={item.image_url.startsWith("http") ? item.image_url : `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api").replace("/api", "")}${item.image_url}`}
                               alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-70 group-hover:opacity-100"
+                              style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.75, transition: "opacity 0.3s, transform 0.5s" }}
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-7xl opacity-10 bg-gradient-to-br from-white/5 to-transparent">🍽️</div>
+                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 56, opacity: 0.1 }}>🍽️</div>
                           )}
-                          <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-xl px-4 py-1.5 rounded-xl border border-white/10">
-                            <span className="text-[10px] font-black text-[#ff6b35] tracking-[0.2em] uppercase">{item.category}</span>
-                          </div>
-                          <div className="absolute top-4 right-4">
-                            <motion.button
-                              onClick={() => handleStockToggle(item.id)}
-                              whileTap={{ scale: 0.9 }}
-                              className={`px-3 py-2 text-[10px] font-bold rounded-xl backdrop-blur-xl border transition-all shadow-lg ${
-                                item.in_stock
-                                  ? "bg-green-500/20 text-green-300 border-green-500/30 hover:bg-green-500/30"
-                                  : "bg-red-500/20 text-red-300 border-red-500/30 hover:bg-red-500/30"
-                              }`}
-                            >
-                              {item.in_stock ? "🟢 ইন" : "🔴 আউট"}
-                            </motion.button>
-                          </div>
+                          {/* Category pill */}
+                          <span style={{ position: "absolute", top: 12, left: 12, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(10px)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 100, padding: "4px 12px", fontSize: 10, fontWeight: 700, color: "#F59E0B", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                            {item.category}
+                          </span>
+                          {/* Stock toggle — circle btn */}
+                          <motion.button
+                            onClick={() => handleStockToggle(item.id)}
+                            whileTap={{ scale: 0.88 }}
+                            title="স্টক টগল"
+                            style={{
+                              position: "absolute",
+                              top: 10,
+                              right: 12,
+                              width: 36,
+                              height: 36,
+                              borderRadius: "50%",
+                              background: item.in_stock ? "rgba(16,185,129,0.85)" : "rgba(220,38,38,0.85)",
+                              backdropFilter: "blur(10px)",
+                              border: "none",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: 14,
+                            }}
+                          >
+                            {item.in_stock ? "🟢" : "🔴"}
+                          </motion.button>
                         </div>
 
-                        <div className="p-6 sm:p-7 flex-1 flex flex-col relative z-10">
-                          <h3 className="text-xl sm:text-2xl font-black text-white mb-3 line-clamp-1 group-hover:text-[#ff6b35] transition-colors leading-tight">{item.name}</h3>
-                          <p className="text-sm text-gray-300 line-clamp-3 mb-6 flex-1 leading-relaxed font-medium">{item.description}</p>
-                          
-                          <div className="flex items-center justify-between border-t border-white/[0.06] pt-5 mt-auto">
-                            <p className="text-3xl sm:text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-[#ff6b35]">৳{Math.round(parseFloat(item.price))}</p>
-                            <div className="flex gap-2">
-                              <button
+                        {/* Info */}
+                        <div style={{ padding: "16px 18px", flex: 1, display: "flex", flexDirection: "column" }}>
+                          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: "0 0 6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", fontFamily: "'Hind Siliguri', sans-serif" }}>{item.name}</h3>
+                          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", margin: "0 0 14px", flex: 1, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", lineHeight: 1.5, fontFamily: "'Hind Siliguri', sans-serif" }}>{item.description}</p>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 12 }}>
+                            <span style={{ fontSize: 22, fontWeight: 900, color: "#F59E0B" }}>৳{Math.round(parseFloat(item.price))}</span>
+                            <div style={{ display: "flex", gap: 8 }}>
+                              {/* Edit circle btn */}
+                              <motion.button
                                 onClick={() => handleEditClick(item)}
-                                className="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-lg"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                title="সম্পাদন"
+                                style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.25)", color: "#93C5FD", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, transition: "all 0.2s" }}
                               >
                                 ✏️
-                              </button>
-                              <button
+                              </motion.button>
+                              {/* Delete circle btn */}
+                              <motion.button
                                 onClick={() => handleDeleteItem(item.id)}
-                                className="w-11 h-11 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-lg"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                title="মুছুন"
+                                style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.25)", color: "#FCA5A5", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, transition: "all 0.2s" }}
                               >
                                 🗑️
-                              </button>
+                              </motion.button>
                             </div>
                           </div>
                         </div>
                       </motion.div>
                     ))
                   ) : (
-                    <div className="col-span-full py-28 text-center bg-[#0a0a1a]/60 backdrop-blur-xl rounded-[3rem] border border-white/[0.06]">
-                      <div className="text-8xl mb-6 opacity-10">🍽️</div>
-                      <p className="text-2xl text-gray-600 font-black uppercase tracking-widest">খালি মেনু</p>
-                      <p className="text-gray-700 mt-4 font-medium">নতুন আইটেম যোগ করতে উপরের বাটনে ক্লিক করুন</p>
+                    <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "80px 20px", background: "rgba(255,255,255,0.02)", borderRadius: 24, border: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ fontSize: 64, marginBottom: 16, opacity: 0.15 }}>🍽️</div>
+                      <p style={{ fontSize: 20, color: "rgba(255,255,255,0.3)", fontWeight: 800, fontFamily: "'Hind Siliguri', sans-serif" }}>মেনু খালি</p>
                     </div>
                   )}
                 </AnimatePresence>
