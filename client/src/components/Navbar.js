@@ -57,7 +57,7 @@ export default function Navbar() {
       {/* Subtle overlay */}
       <div className="absolute inset-0 opacity-[0.01] bg-white pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+      <div className="relative w-full max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Brand Section */}
           <motion.a

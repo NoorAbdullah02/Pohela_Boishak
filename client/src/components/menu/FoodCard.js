@@ -124,7 +124,7 @@ export default function FoodCard({ item, index }) {
 
       {/* Corner accent */}
       <div
-        className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-bl ${colors.gradient} opacity-40 blur-2xl pointer-events-none`}
+        className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] ${colors.gradient} opacity-20 pointer-events-none`}
       />
 
       <div className="relative z-10 h-full flex flex-col">
@@ -175,7 +175,7 @@ export default function FoodCard({ item, index }) {
                 }}
                 className="relative"
               >
-                <div className="absolute inset-0 bg-white/15 blur-xl rounded-full scale-[2] group-hover:scale-[2.3] transition-all duration-500" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle,_rgba(255,255,255,0.15)_0%,_transparent_70%)] rounded-full scale-[2] group-hover:scale-[2.3] transition-all duration-500" />
                 <span className="relative text-5xl sm:text-6xl md:text-7xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-500 block">
                   {getEmoji(item.name, item.category)}
                 </span>
@@ -205,7 +205,7 @@ export default function FoodCard({ item, index }) {
                 {item.name}
               </h3>
               <div className="relative flex-shrink-0">
-                <div className="absolute inset-0 bg-amber-500/15 blur-md rounded-lg sm:rounded-xl" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse,_rgba(245,158,11,0.2)_0%,_transparent_80%)] rounded-lg sm:rounded-xl" />
                 <div className="relative bg-[#12122a]/95 border border-amber-500/30 px-2.5 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl shadow-lg flex items-center gap-1.5 sm:gap-2">
                   <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
                   <span className="text-amber-400 font-extrabold text-sm sm:text-base md:text-lg tracking-wide whitespace-nowrap">
@@ -256,7 +256,7 @@ export default function FoodCard({ item, index }) {
                   animate={{ opacity: 1, scale: 1.5 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className={`absolute inset-0 bg-gradient-to-r ${colors.accent} opacity-60 blur-xl pointer-events-none`}
+                  className={`absolute inset-0 bg-gradient-to-r ${colors.accent} opacity-30 pointer-events-none`}
                 />
               )}
             </AnimatePresence>

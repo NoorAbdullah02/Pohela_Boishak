@@ -36,11 +36,11 @@ export default function MenuSection({ activeCategory = "সব", onItemsLoad }) 
       className="relative py-12 sm:py-16 md:py-24 lg:py-32 overflow-hidden"
     >
       {/* Decorative background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] sm:w-[600px] h-[300px] sm:h-[400px] bg-gradient-to-b from-amber-500/8 via-orange-500/5 to-transparent rounded-full blur-[80px] sm:blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[300px] sm:w-[400px] h-[200px] sm:h-[300px] bg-gradient-to-t from-purple-500/5 to-transparent rounded-full blur-[60px] sm:blur-[80px] pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-gradient-to-l from-orange-500/5 to-transparent rounded-full blur-[60px] sm:blur-[80px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] sm:w-[600px] h-[300px] sm:h-[400px] bg-[radial-gradient(ellipse_at_top,_rgba(245,158,11,0.15)_0%,_transparent_70%)] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[300px] sm:w-[400px] h-[200px] sm:h-[300px] bg-[radial-gradient(ellipse_at_bottom,_rgba(168,85,247,0.1)_0%,_transparent_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-[radial-gradient(ellipse_at_right,_rgba(249,115,22,0.1)_0%,_transparent_70%)] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -83,7 +83,7 @@ export default function MenuSection({ activeCategory = "সব", onItemsLoad }) 
         {/* Items Grid */}
         <div className="relative">
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
@@ -106,7 +106,7 @@ export default function MenuSection({ activeCategory = "সব", onItemsLoad }) 
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.35 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 md:gap-8 lg:gap-10"
               >
                 {filteredItems.map((item, index) => (
                   <FoodCard key={item.id} item={item} index={index} />

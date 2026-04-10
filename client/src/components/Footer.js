@@ -32,7 +32,7 @@ export default function Footer() {
                 />
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative z-10 w-full max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
                 {/* Main Footer Content */}
                 <div className="py-12 sm:py-16 md:py-20 grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
                     {/* Brand Section */}

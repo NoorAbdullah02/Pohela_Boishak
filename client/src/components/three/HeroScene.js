@@ -267,7 +267,7 @@ export default function HeroScene() {
       <Canvas
         camera={{ position: [0, 0, 8], fov: 55 }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        dpr={[1, 2]}
+        dpr={[1, 1.25]}
         style={{
           background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)",
         }}
