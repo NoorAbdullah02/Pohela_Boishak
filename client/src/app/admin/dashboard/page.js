@@ -374,31 +374,60 @@ export default function AdminDashboard() {
       ]);
       const fresh = ordersRes.data.orders;
       const prev = ordersRef.current;
-      const newCount = fresh.length - prev.length;
-      if (newCount > 0) {
-        // New orders detected!
-        showToast(`🔔 ${newCount}টি নতুন অর্ডার এসেছে!`, "new");
-        setNewOrderCount((c) => c + newCount);
+
+      // Detect new orders by comparing IDs
+      const prevIds = new Set(prev.map((o) => o.id));
+      const newOrders = fresh.filter((o) => !prevIds.has(o.id));
+      if (newOrders.length > 0) {
+        showToast(`🔔 ${newOrders.length}টি নতুন অর্ডার এসেছে!`, "new");
+        setNewOrderCount((c) => c + newOrders.length);
       }
+
+      // Detect status changes in existing orders
+      const prevStatusMap = {};
+      prev.forEach((o) => { prevStatusMap[o.id] = o.status; });
+      const statusChanged = fresh.some(
+        (o) => prevStatusMap[o.id] && prevStatusMap[o.id] !== o.status
+      );
+
       ordersRef.current = fresh;
       setOrders(fresh);
       setStats(statsRes.data);
+
+      // Also refresh items if there might be stock changes
+      if (statusChanged) {
+        try {
+          const itemsRes = await foodAPI.getAll();
+          setItems(itemsRes.data.items);
+        } catch { /* ignore */ }
+      }
     } catch {
       // silent — don't break UI on poll error
     }
   }, []);
 
-  // Start/stop polling when authenticated
+  // Start/stop polling when authenticated + visibility change handler
   useEffect(() => {
-    const POLL_INTERVAL = 15000; // 15 seconds
+    const POLL_INTERVAL = 5000; // 5 seconds for near real-time updates
     const startPolling = () => {
       if (pollRef.current) return;
       pollRef.current = setInterval(() => {
         if (!document.hidden) silentPoll();
       }, POLL_INTERVAL);
     };
+
+    // Immediately poll when tab becomes visible again
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        silentPoll(); // instant refresh
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     startPolling();
+
     return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; }
     };
   }, [silentPoll]);

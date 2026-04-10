@@ -21,7 +21,7 @@ export default function Footer() {
     };
 
     return (
-        <footer className="relative bg-slate-950/90 border-t border-white/10 backdrop-blur-lg mt-12 sm:mt-16 md:mt-20">
+        <footer className="relative bg-slate-950/90 border-t border-white/10 backdrop-blur-lg mt-20 sm:mt-28 md:mt-36">
             {/* Background decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div
@@ -45,9 +45,9 @@ export default function Footer() {
                     >
                         <div className="flex items-center gap-3">
                             <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg blur-md opacity-50" />
-                                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-amber-500/30 to-orange-500/20 flex items-center justify-center border border-amber-500/30">
-                                    <span className="text-xl sm:text-2xl">🍽️</span>
+                                <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full blur-md opacity-50" />
+                                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 border-amber-500/40 overflow-hidden bg-[#0d0d20]">
+                                    <img src="/images/depLogo.webp" alt="Department Logo" className="w-full h-full object-contain" />
                                 </div>
                             </div>
                             <div>

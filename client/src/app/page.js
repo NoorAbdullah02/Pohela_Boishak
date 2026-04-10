@@ -4,8 +4,10 @@ import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MenuSection from "@/components/menu/MenuSection";
+import CategoryTabs from "@/components/menu/CategoryTabs";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const HeroScene = dynamic(() => import("@/components/three/HeroScene"), {
   ssr: false,
@@ -24,17 +26,22 @@ const HeroScene = dynamic(() => import("@/components/three/HeroScene"), {
 });
 
 export default function Home() {
+  const [activeCategory, setActiveCategory] = useState("সব");
+  const [items, setItems] = useState([]);
+
   return (
     <main className="min-h-screen bg-[#0a0a1a]">
       <Navbar />
       <HeroScene />
-      <MenuSection />
-
-      <section id="about" className="py-12 sm:py-20 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl sm:max-w-4xl h-64 sm:h-96 bg-amber-500/5 rounded-full blur-[80px] sm:blur-[120px] pointer-events-none" />
-
-        <div className="flex justify-center relative z-10" />
-      </section>
+      <CategoryTabs
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        items={items}
+      />
+      <MenuSection
+        activeCategory={activeCategory}
+        onItemsLoad={setItems}
+      />
 
       <Footer />
 
@@ -42,3 +49,4 @@ export default function Home() {
     </main>
   );
 }
+

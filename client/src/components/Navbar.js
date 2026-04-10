@@ -28,7 +28,7 @@ export default function Navbar() {
   const links = [
     { label: "মেনু", href: "#menu" },
     { label: "আমাদের সম্পর্কে", href: "#about" },
-    { label: "অ্যাডমিন", href: "/admin/dashboard" },
+    { label: "অ্যাডমিন", href: "/admin/login" },
   ];
 
   return (
