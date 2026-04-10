@@ -107,7 +107,7 @@ export default function FoodCard({ item, index }) {
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -6, transition: { duration: 0.25 } }}
+      whileHover={{ y: -4, transition: { duration: 0.25 } }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4, ease: "easeOut", delay: index * 0.05 }}
       className={`relative overflow-hidden rounded-2xl sm:rounded-3xl border ${colors.border} ${colors.hoverBorder} group flex flex-col transition-all duration-300`}
@@ -124,7 +124,7 @@ export default function FoodCard({ item, index }) {
 
       {/* Corner accent */}
       <div
-        className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${colors.gradient} opacity-40 blur-2xl pointer-events-none`}
+        className={`absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-bl ${colors.gradient} opacity-40 blur-2xl pointer-events-none`}
       />
 
       <div className="relative z-10 h-full flex flex-col">
@@ -134,7 +134,7 @@ export default function FoodCard({ item, index }) {
             <motion.span
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="text-red-300 font-bold text-sm sm:text-lg bg-red-900/80 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full border border-red-500/50 shadow-[0_0_25px_rgba(239,68,68,0.35)]"
+              className="text-red-300 font-bold text-xs sm:text-base bg-red-900/80 px-4 sm:px-6 py-1.5 sm:py-2.5 rounded-full border border-red-500/50 shadow-[0_0_25px_rgba(239,68,68,0.35)]"
             >
               স্টক শেষ
             </motion.span>
@@ -143,13 +143,13 @@ export default function FoodCard({ item, index }) {
 
         {/* Image Section */}
         <div
-          className={`relative h-44 sm:h-52 overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-br ${colors.imgBg}`}
+          className={`relative h-40 sm:h-48 md:h-52 overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-gradient-to-br ${colors.imgBg}`}
         >
           {/* Light shimmer on hover */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-0" />
 
           {item.image_url ? (
-            <div className="absolute inset-0 z-10 flex items-center justify-center p-4 sm:p-5">
+            <div className="absolute inset-0 z-10 flex items-center justify-center p-3 sm:p-4 md:p-5">
               <motion.div
                 whileHover={{ scale: 1.04 }}
                 className="relative w-full h-full flex items-center justify-center rounded-xl sm:rounded-2xl bg-black/25 backdrop-blur-md border border-white/10 shadow-[0_8px_25px_rgba(0,0,0,0.45)] overflow-hidden group-hover:bg-black/30 transition-all duration-500"
@@ -176,7 +176,7 @@ export default function FoodCard({ item, index }) {
                 className="relative"
               >
                 <div className="absolute inset-0 bg-white/15 blur-xl rounded-full scale-[2] group-hover:scale-[2.3] transition-all duration-500" />
-                <span className="relative text-6xl sm:text-7xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-500 block">
+                <span className="relative text-5xl sm:text-6xl md:text-7xl drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-500 block">
                   {getEmoji(item.name, item.category)}
                 </span>
               </motion.div>
@@ -184,31 +184,31 @@ export default function FoodCard({ item, index }) {
           )}
 
           {/* Category Badge */}
-          <div className="absolute top-3 right-3 z-20">
+          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-20">
             <span
-              className={`text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r ${colors.accent} text-white shadow-lg backdrop-blur-sm`}
+              className={`text-[9px] sm:text-[10px] md:text-xs font-bold px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 rounded-full bg-gradient-to-r ${colors.accent} text-white shadow-lg backdrop-blur-sm`}
             >
               {item.category}
             </span>
           </div>
 
           {/* Bottom gradient fade */}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#0a0a19] via-[#0a0a19]/60 to-transparent z-10" />
+          <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-20 bg-gradient-to-t from-[#0a0a19] via-[#0a0a19]/60 to-transparent z-10" />
         </div>
 
         {/* Content Section */}
-        <div className="p-5 sm:p-6 md:p-7 flex-1 flex flex-col justify-between relative z-10 overflow-hidden">
-          <div className="space-y-3 sm:space-y-4">
+        <div className="p-4 sm:p-5 md:p-6 flex-1 flex flex-col justify-between relative z-10 overflow-hidden">
+          <div className="space-y-2 sm:space-y-2.5 md:space-y-3">
             {/* Name and Price Row */}
-            <div className="flex justify-between items-start gap-3">
-              <h3 className="text-base sm:text-lg md:text-xl font-extrabold text-white leading-snug line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-300 group-hover:to-orange-400 transition-all duration-300 flex-1 min-w-0 break-words">
+            <div className="flex justify-between items-start gap-2 sm:gap-3">
+              <h3 className="text-sm sm:text-base md:text-lg font-extrabold text-white leading-snug line-clamp-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-amber-300 group-hover:to-orange-400 transition-all duration-300 flex-1 min-w-0 break-words">
                 {item.name}
               </h3>
               <div className="relative flex-shrink-0">
-                <div className="absolute inset-0 bg-amber-500/15 blur-md rounded-xl" />
-                <div className="relative bg-[#12122a]/95 border border-amber-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl shadow-lg flex items-center gap-2">
-                  <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
-                  <span className="text-amber-400 font-extrabold text-base sm:text-lg tracking-wide whitespace-nowrap">
+                <div className="absolute inset-0 bg-amber-500/15 blur-md rounded-lg sm:rounded-xl" />
+                <div className="relative bg-[#12122a]/95 border border-amber-500/30 px-2.5 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 rounded-lg sm:rounded-xl shadow-lg flex items-center gap-1.5 sm:gap-2">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                  <span className="text-amber-400 font-extrabold text-sm sm:text-base md:text-lg tracking-wide whitespace-nowrap">
                     ৳{Math.round(item.price)}
                   </span>
                 </div>
@@ -222,11 +222,11 @@ export default function FoodCard({ item, index }) {
 
             {/* Combo Items */}
             {item.combo_items && item.combo_items.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-1">
+              <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2 pt-0.5">
                 {item.combo_items.map((ci, i) => (
                   <span
                     key={i}
-                    className="text-[10px] sm:text-xs bg-white/[0.06] text-gray-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 backdrop-blur-md font-medium"
+                    className="text-[9px] sm:text-[10px] md:text-xs bg-white/[0.06] text-gray-300 px-2 sm:px-2.5 md:px-3 py-0.5 sm:py-1 md:py-1.5 rounded-full border border-white/10 backdrop-blur-md font-medium"
                   >
                     {ci}
                   </span>
@@ -242,7 +242,7 @@ export default function FoodCard({ item, index }) {
             disabled={!item.in_stock}
             onClick={handleAdd}
             id={`add-to-cart-${item.id}`}
-            className={`w-full mt-5 sm:mt-6 relative overflow-hidden group/btn rounded-xl sm:rounded-2xl p-[1.5px] transition-all duration-300 ${
+            className={`w-full mt-4 sm:mt-5 relative overflow-hidden group/btn rounded-xl sm:rounded-2xl p-[1px] sm:p-[1.5px] transition-all duration-300 ${
               item.in_stock
                 ? "shadow-[0_4px_20px_rgba(0,0,0,0.4)] hover:shadow-[0_8px_30px_rgba(245,158,11,0.25)]"
                 : "opacity-50 cursor-not-allowed"
@@ -261,22 +261,22 @@ export default function FoodCard({ item, index }) {
               )}
             </AnimatePresence>
             {item.in_stock && (
-              <span className="absolute inset-0 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-80 group-hover/btn:opacity-100 group-hover/btn:animate-gradient transition-opacity" />
+              <span className="absolute inset-0 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 opacity-80 group-hover/btn:opacity-100 group-active/btn:opacity-100 group-hover/btn:animate-gradient group-active/btn:animate-gradient transition-opacity" />
             )}
             <div
-              className={`relative h-full w-full px-4 py-3 sm:py-3.5 rounded-[10px] sm:rounded-[14px] flex items-center justify-center gap-2 transition-all duration-300 ${
+              className={`relative h-full w-full px-4 sm:px-5 py-3 sm:py-3.5 md:py-4 rounded-[8px] sm:rounded-[12px] flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 ${
                 item.in_stock
-                  ? "bg-[#0d0d20] group-hover/btn:bg-transparent"
+                  ? "bg-[#0d0d20] group-hover/btn:bg-transparent group-active/btn:bg-transparent"
                   : "bg-gray-800"
               }`}
             >
-              <span className="font-bold text-sm sm:text-base tracking-wide transition-colors">
+              <span className="font-bold text-sm sm:text-base md:text-lg tracking-wide transition-colors whitespace-nowrap group-hover/btn:text-white group-active/btn:text-white">
                 {item.in_stock ? "কার্টে যোগ করুন" : "স্টক শেষ"}
               </span>
               {item.in_stock && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 group-hover/btn:text-white transition-all duration-300 group-hover/btn:translate-x-0.5"
+                  className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-amber-500 group-hover/btn:text-white group-active/btn:text-white transition-all duration-300 group-hover/btn:translate-x-1 group-active/btn:translate-x-1 flex-shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

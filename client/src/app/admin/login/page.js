@@ -44,14 +44,12 @@ export default function AdminLogin() {
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           {/* large ambient orbs */}
           {[
-            { w: 700, h: 700, x: "-15%", y: "-20%", c: "rgba(245,158,11,0.07)", d: 20 },
-            { w: 600, h: 600, x: "60%", y: "30%", c: "rgba(220,38,38,0.06)", d: 25 },
-            { w: 400, h: 400, x: "20%", y: "60%", c: "rgba(245,158,11,0.05)", d: 18 },
+            { w: 700, h: 700, x: "-15%", y: "-20%", c: "rgba(245,158,11,0.07)" },
+            { w: 600, h: 600, x: "60%", y: "30%", c: "rgba(220,38,38,0.06)" },
+            { w: 400, h: 400, x: "20%", y: "60%", c: "rgba(245,158,11,0.05)" },
           ].map((o, i) => (
-            <motion.div
+            <div
               key={i}
-              animate={{ scale: [1, 1.15, 1], x: [0, 20, 0], y: [0, -20, 0] }}
-              transition={{ duration: o.d, repeat: Infinity, ease: "easeInOut", delay: i * 3 }}
               style={{
                 position: "absolute",
                 width: o.w,
@@ -61,6 +59,7 @@ export default function AdminLogin() {
                 background: `radial-gradient(circle, ${o.c}, transparent 70%)`,
                 filter: "blur(40px)",
                 borderRadius: "50%",
+                willChange: "transform",
               }}
             />
           ))}
