@@ -261,41 +261,43 @@ function Scene() {
 
 export default function HeroScene() {
   return (
-    <div className="relative w-full h-screen overflow-hidden" id="hero">
+    <div className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden pt-28 pb-10 sm:py-32" id="hero">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a1a] z-[5] pointer-events-none" />
 
-      <Canvas
-        camera={{ position: [0, 0, 8], fov: 55 }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        dpr={[1, 1.25]}
-        style={{
-          background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)",
-        }}
-        onCreated={({ camera }) => {
-          const handleResize = () => {
-            if (window.innerWidth < 640) {
-              camera.fov = 75;
-              camera.position.z = 10;
-            } else if (window.innerWidth < 1024) {
-              camera.fov = 65;
-              camera.position.z = 9;
-            } else {
-              camera.fov = 55;
-              camera.position.z = 8;
-            }
-            camera.updateProjectionMatrix();
-          };
-          window.addEventListener("resize", handleResize);
-          handleResize();
-          return () => window.removeEventListener("resize", handleResize);
-        }}
-      >
-        <Suspense fallback={null}>
-          <Scene />
-        </Suspense>
-      </Canvas>
+      <div className="absolute inset-0 z-0">
+        <Canvas
+          camera={{ position: [0, 0, 8], fov: 55 }}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          dpr={[1, 1.25]}
+          style={{
+            background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)",
+          }}
+          onCreated={({ camera }) => {
+            const handleResize = () => {
+              if (window.innerWidth < 640) {
+                camera.fov = 75;
+                camera.position.z = 10;
+              } else if (window.innerWidth < 1024) {
+                camera.fov = 65;
+                camera.position.z = 9;
+              } else {
+                camera.fov = 55;
+                camera.position.z = 8;
+              }
+              camera.updateProjectionMatrix();
+            };
+            window.addEventListener("resize", handleResize);
+            handleResize();
+            return () => window.removeEventListener("resize", handleResize);
+          }}
+        >
+          <Suspense fallback={null}>
+            <Scene />
+          </Suspense>
+        </Canvas>
+      </div>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-4">
+      <div className="relative flex flex-col items-center justify-center z-10 pointer-events-none px-4 w-full">
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
@@ -352,6 +354,41 @@ export default function HeroScene() {
           >
             🍽️ মেনু দেখুন
           </motion.button>
+
+
+          {/* New Video Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.8, duration: 0.8 }}
+            className="mt-24 mb-2 sm:mt-32 sm:mb-8 w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl mx-auto relative group pointer-events-auto"
+          >
+            {/* Background Glow acting like playing from top */}
+            <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-[2rem] sm:rounded-[2.5rem] opacity-70 blur-2xl group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
+
+            {/* Animated Border Container */}
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-[3px] sm:p-[4px]">
+
+              {/* Rotating glowing border beam */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] aspect-square bg-[conic-gradient(from_0deg,transparent_0_280deg,#f59e0b_360deg)] z-0"
+              />
+
+              {/* Solid inner background to mask the rotating beam */}
+              <div className="absolute inset-[3px] sm:inset-[4px] bg-[#0a0a1a] rounded-[13px] sm:rounded-[20px] z-0" />
+
+              <video
+                src="/pohela_boishak.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="relative z-10 w-full h-full max-h-[60vh] sm:max-h-[70vh] object-cover rounded-[13px] sm:rounded-[20px]"
+              />
+            </div>
+          </motion.div>
         </motion.div>
       </div>
 
