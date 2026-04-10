@@ -2,53 +2,35 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float, Stars, Sparkles, MeshDistortMaterial } from "@react-three/drei";
-import { useRef, Suspense, useMemo } from "react";
-import { motion } from "framer-motion";
+import { useRef, Suspense, useMemo, useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
+
+/* ─────────────── 3-D Objects ─────────────── */
 
 function MangalPradip({ position, color }) {
   const ref = useRef();
-
-  useFrame((state) => {
-    ref.current.rotation.y = state.clock.elapsedTime * 0.4;
+  useFrame((s) => {
+    ref.current.rotation.y = s.clock.elapsedTime * 0.4;
     ref.current.position.y =
-      position[1] + Math.sin(state.clock.elapsedTime * 0.6 + position[0]) * 0.25;
+      position[1] + Math.sin(s.clock.elapsedTime * 0.6 + position[0]) * 0.25;
   });
-
   return (
     <Float speed={2} rotationIntensity={0.4} floatIntensity={0.8}>
       <group ref={ref} position={position} scale={0.55}>
         <mesh>
           <cylinderGeometry args={[0.18, 0.4, 0.15, 12]} />
-          <meshStandardMaterial
-            color="#d4a843"
-            metalness={0.9}
-            roughness={0.1}
-          />
+          <meshStandardMaterial color="#d4a843" metalness={0.9} roughness={0.1} />
         </mesh>
         <mesh position={[0, 0.18, 0]}>
           <cylinderGeometry args={[0.06, 0.18, 0.35, 12]} />
-          <meshStandardMaterial
-            color="#b8860b"
-            metalness={0.8}
-            roughness={0.2}
-          />
+          <meshStandardMaterial color="#b8860b" metalness={0.8} roughness={0.2} />
         </mesh>
         <mesh position={[0, 0.5, 0]}>
           <sphereGeometry args={[0.14, 12, 12]} />
-          <MeshDistortMaterial
-            color={color}
-            speed={4}
-            distort={0.5}
-            radius={1}
-          />
+          <MeshDistortMaterial color={color} speed={4} distort={0.5} radius={1} />
         </mesh>
-        <pointLight
-          position={[0, 0.6, 0]}
-          color="#ff8c00"
-          intensity={3}
-          distance={5}
-        />
+        <pointLight position={[0, 0.6, 0]} color="#ff8c00" intensity={3} distance={5} />
       </group>
     </Float>
   );
@@ -56,40 +38,24 @@ function MangalPradip({ position, color }) {
 
 function Dhol({ position }) {
   const ref = useRef();
-
-  useFrame((state) => {
-    ref.current.rotation.z =
-      Math.sin(state.clock.elapsedTime * 0.3) * 0.12;
-    ref.current.rotation.x =
-      Math.sin(state.clock.elapsedTime * 0.5) * 0.06;
+  useFrame((s) => {
+    ref.current.rotation.z = Math.sin(s.clock.elapsedTime * 0.3) * 0.12;
+    ref.current.rotation.x = Math.sin(s.clock.elapsedTime * 0.5) * 0.06;
   });
-
   return (
     <Float speed={1.4} rotationIntensity={0.25}>
       <group ref={ref} position={position} rotation={[0, 0, Math.PI / 5]}>
         <mesh>
           <cylinderGeometry args={[0.28, 0.28, 0.55, 12]} />
-          <meshStandardMaterial
-            color="#8B4513"
-            metalness={0.3}
-            roughness={0.7}
-          />
+          <meshStandardMaterial color="#8B4513" metalness={0.3} roughness={0.7} />
         </mesh>
         <mesh position={[0, 0.28, 0]}>
           <cylinderGeometry args={[0.29, 0.29, 0.03, 16]} />
-          <meshStandardMaterial
-            color="#f5deb3"
-            metalness={0.1}
-            roughness={0.9}
-          />
+          <meshStandardMaterial color="#f5deb3" metalness={0.1} roughness={0.9} />
         </mesh>
         <mesh position={[0, -0.28, 0]}>
           <cylinderGeometry args={[0.29, 0.29, 0.03, 16]} />
-          <meshStandardMaterial
-            color="#f5deb3"
-            metalness={0.1}
-            roughness={0.9}
-          />
+          <meshStandardMaterial color="#f5deb3" metalness={0.1} roughness={0.9} />
         </mesh>
       </group>
     </Float>
@@ -98,12 +64,9 @@ function Dhol({ position }) {
 
 function Mask({ position }) {
   const ref = useRef();
-
-  useFrame((state) => {
-    ref.current.rotation.y =
-      Math.sin(state.clock.elapsedTime * 0.35 + position[0]) * 0.35;
+  useFrame((s) => {
+    ref.current.rotation.y = Math.sin(s.clock.elapsedTime * 0.35 + position[0]) * 0.35;
   });
-
   return (
     <Float speed={1.2} rotationIntensity={0.2}>
       <group ref={ref} position={position} scale={0.5}>
@@ -135,42 +98,21 @@ function Mask({ position }) {
 
 function AlponaRing({ position, scale = 1 }) {
   const ref = useRef();
-
-  useFrame((state) => {
-    ref.current.rotation.z = state.clock.elapsedTime * 0.15;
-  });
-
+  useFrame((s) => { ref.current.rotation.z = s.clock.elapsedTime * 0.15; });
   return (
     <Float speed={0.6} floatIntensity={0.4}>
-      <group
-        ref={ref}
-        position={position}
-        scale={scale}
-        rotation={[Math.PI / 2, 0, 0]}
-      >
+      <group ref={ref} position={position} scale={scale} rotation={[Math.PI / 2, 0, 0]}>
         <mesh>
           <torusGeometry args={[0.5, 0.04, 6, 32]} />
-          <meshStandardMaterial
-            color="#ffd700"
-            metalness={0.9}
-            roughness={0.1}
-          />
+          <meshStandardMaterial color="#ffd700" metalness={0.9} roughness={0.1} />
         </mesh>
         <mesh>
           <torusGeometry args={[0.35, 0.025, 6, 32]} />
-          <meshStandardMaterial
-            color="#ff6b35"
-            metalness={0.8}
-            roughness={0.2}
-          />
+          <meshStandardMaterial color="#ff6b35" metalness={0.8} roughness={0.2} />
         </mesh>
         <mesh>
           <torusGeometry args={[0.2, 0.015, 6, 32]} />
-          <meshStandardMaterial
-            color="#e63946"
-            metalness={0.8}
-            roughness={0.2}
-          />
+          <meshStandardMaterial color="#e63946" metalness={0.8} roughness={0.2} />
         </mesh>
       </group>
     </Float>
@@ -178,39 +120,22 @@ function AlponaRing({ position, scale = 1 }) {
 }
 
 function FloatingParticles() {
-  const count = 100;
   const ref = useRef();
-
   const positions = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count * 3; i++) {
-      pos[i] = (Math.random() - 0.5) * 25;
-    }
+    const pos = new Float32Array(100 * 3);
+    for (let i = 0; i < 300; i++) pos[i] = (Math.random() - 0.5) * 25;
     return pos;
   }, []);
-
-  useFrame((state) => {
-    ref.current.rotation.y = state.clock.elapsedTime * 0.02;
-    ref.current.rotation.x = state.clock.elapsedTime * 0.01;
+  useFrame((s) => {
+    ref.current.rotation.y = s.clock.elapsedTime * 0.02;
+    ref.current.rotation.x = s.clock.elapsedTime * 0.01;
   });
-
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={positions}
-          itemSize={3}
-        />
+        <bufferAttribute attach="attributes-position" count={100} array={positions} itemSize={3} />
       </bufferGeometry>
-      <pointsMaterial
-        size={0.04}
-        color="#ffd700"
-        transparent
-        opacity={0.6}
-        sizeAttenuation
-      />
+      <pointsMaterial size={0.04} color="#ffd700" transparent opacity={0.6} sizeAttenuation />
     </points>
   );
 }
@@ -222,22 +147,8 @@ function Scene() {
       <directionalLight position={[5, 5, 5]} intensity={0.4} color="#fff5e6" />
       <pointLight position={[0, 3, 0]} intensity={1} color="#ff6b35" distance={10} />
 
-      <Stars
-        radius={80}
-        depth={60}
-        count={2500}
-        factor={4}
-        saturation={0.3}
-        fade
-        speed={0.5}
-      />
-      <Sparkles
-        count={80}
-        scale={12}
-        size={2.5}
-        speed={0.4}
-        color="#ffd700"
-      />
+      <Stars radius={80} depth={60} count={2500} factor={4} saturation={0.3} fade speed={0.5} />
+      <Sparkles count={80} scale={12} size={2.5} speed={0.4} color="#ffd700" />
 
       <MangalPradip position={[-3.5, 1.2, -1]} color="#ff6b35" />
       <MangalPradip position={[3.2, -0.8, -2.5]} color="#e63946" />
@@ -259,36 +170,82 @@ function Scene() {
   );
 }
 
-export default function HeroScene() {
+/* ─────────────── Decorative SVG Petals ─────────────── */
+function FloralDivider() {
   return (
-    <div className="relative w-full h-auto sm:min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 pb-20 sm:pt-32 sm:pb-32" id="hero">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a1a] z-[5] pointer-events-none" />
+    <div className="hero-floral-divider" aria-hidden="true">
+      <svg viewBox="0 0 400 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+        <line x1="0" y1="20" x2="145" y2="20" stroke="url(#lineGrad)" strokeWidth="1" />
+        <g transform="translate(200,20)">
+          <circle cx="-40" cy="0" r="3" fill="#ff6b35" opacity="0.6" />
+          <circle cx="-20" cy="0" r="2" fill="#ffd700" opacity="0.5" />
+          <circle cx="0" cy="0" r="5" fill="url(#petalCentre)" />
+          <circle cx="20" cy="0" r="2" fill="#ffd700" opacity="0.5" />
+          <circle cx="40" cy="0" r="3" fill="#ff6b35" opacity="0.6" />
+        </g>
+        <line x1="255" y1="20" x2="400" y2="20" stroke="url(#lineGrad2)" strokeWidth="1" />
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="transparent" />
+            <stop offset="100%" stopColor="#ffd700" stopOpacity="0.5" />
+          </linearGradient>
+          <linearGradient id="lineGrad2" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#ffd700" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="transparent" />
+          </linearGradient>
+          <radialGradient id="petalCentre">
+            <stop offset="0%" stopColor="#ffd700" />
+            <stop offset="100%" stopColor="#ff6b35" />
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+  );
+}
 
-      <div className="absolute inset-0 z-0">
+/* ─────────────── Stat Badges ─────────────── */
+const stats = [
+  { value: "৫০+", label: "আইটেম" },
+  { value: "১০০%", label: "তাজা" },
+  { value: "১ দিন", label: "উৎসব" },
+];
+
+/* ─────────────── Main HeroScene ─────────────── */
+export default function HeroScene() {
+  const [videoReady, setVideoReady] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => { setIsMounted(true); }, []);
+
+  /* scroll helper */
+  const scrollToMenu = () =>
+    document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+
+  return (
+    <section
+      id="hero"
+      className="hero-section"
+      aria-label="পহেলা বৈশাখ স্টল হিরো সেকশন"
+    >
+      {/* ── 3-D Background Canvas ── */}
+      <div className="hero-canvas-wrap" aria-hidden="true">
         <Canvas
           camera={{ position: [0, 0, 8], fov: 55 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           dpr={[1, 1.25]}
-          style={{
-            background: "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%)",
-          }}
+          style={{ background: "linear-gradient(180deg,#0a0a1a 0%,#1a1a2e 50%,#0a0a1a 100%)" }}
           onCreated={({ camera }) => {
-            const handleResize = () => {
-              if (window.innerWidth < 640) {
-                camera.fov = 75;
-                camera.position.z = 10;
-              } else if (window.innerWidth < 1024) {
-                camera.fov = 65;
-                camera.position.z = 9;
-              } else {
-                camera.fov = 55;
-                camera.position.z = 8;
-              }
+            const adjust = () => {
+              const w = window.innerWidth;
+              if (w < 480)       { camera.fov = 80; camera.position.z = 11; }
+              else if (w < 768)  { camera.fov = 72; camera.position.z = 10; }
+              else if (w < 1024) { camera.fov = 65; camera.position.z = 9; }
+              else               { camera.fov = 55; camera.position.z = 8; }
               camera.updateProjectionMatrix();
             };
-            window.addEventListener("resize", handleResize);
-            handleResize();
-            return () => window.removeEventListener("resize", handleResize);
+            window.addEventListener("resize", adjust);
+            adjust();
+            return () => window.removeEventListener("resize", adjust);
           }}
         >
           <Suspense fallback={null}>
@@ -297,118 +254,197 @@ export default function HeroScene() {
         </Canvas>
       </div>
 
-      <div className="relative flex flex-col items-center justify-center z-10 pointer-events-none px-4 w-full">
+      {/* ── Gradient overlays ── */}
+      <div className="hero-overlay-top"    aria-hidden="true" />
+      <div className="hero-overlay-bottom" aria-hidden="true" />
+      <div className="hero-overlay-sides"  aria-hidden="true" />
+
+      {/* ── Main content wrapper ── */}
+      <div className="hero-content">
+
+        {/* ── Text block ── */}
         <motion.div
-          initial={{ opacity: 0, y: 60 }}
+          className="hero-text-block"
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
-          className="text-center"
+          transition={{ duration: 1.1, delay: 0.2, ease: "easeOut" }}
         >
+          {/* Department tag */}
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.8 }}
-            className="text-sm md:text-base text-amber-300/60 tracking-[0.3em] uppercase mb-4"
+            className="hero-dept-tag"
+            initial={{ opacity: 0, letterSpacing: "0.1em" }}
+            animate={{ opacity: 1, letterSpacing: "0.3em" }}
+            transition={{ delay: 0.7, duration: 0.9 }}
           >
             আইসিই বিভাগ উপস্থাপন করছে
           </motion.p>
 
-          <h1 className="hero-title text-5xl md:text-7xl lg:text-8xl font-bold text-gradient-gold mb-3 leading-tight">
-            শুভ নববর্ষ
+          {/* Main title */}
+          <h1 className="hero-main-title">
+            <span className="hero-title-bn text-gradient-gold">শুভ নববর্ষ</span>
           </h1>
 
-          <motion.h2
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1, duration: 0.6 }}
-            className="hero-year text-4xl xs:text-5xl md:text-6xl lg:text-7xl font-light text-amber-200/70 mb-4 sm:mb-6"
-          >
-            ১৪৩৩
-          </motion.h2>
-
+          {/* Bengali year */}
           <motion.div
+            className="hero-year-wrap"
+            initial={{ opacity: 0, scale: 0.75 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1, duration: 0.7 }}
+          >
+            <span className="hero-year">১৪৩২</span>
+          </motion.div>
+
+          {/* Floral divider */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0.4 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 1.3, duration: 0.7 }}
+          >
+            <FloralDivider />
+          </motion.div>
+
+          {/* Subtitle */}
+          <motion.p
+            className="hero-subtitle"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.3, duration: 0.8 }}
-            className="flex items-center justify-center gap-3 mb-8"
+            transition={{ delay: 1.5, duration: 0.8 }}
           >
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-500/50" />
-            <p className="text-base md:text-lg text-gray-400">
-              পহেলা বৈশাখ স্টল
-            </p>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-500/50" />
-          </motion.div>
+            পহেলা বৈশাখ স্টল
+          </motion.p>
 
-          <motion.button
+          {/* Stat pills */}
+          <motion.div
+            className="hero-stats"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.6 }}
-            whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(255,107,53,0.5)" }}
-            whileTap={{ scale: 0.95 }}
-            className="pointer-events-auto btn-primary text-base sm:text-lg px-8 sm:px-12 py-3 sm:py-4 rounded-full shadow-2xl"
-            onClick={() =>
-              document
-                .getElementById("menu")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
+            transition={{ delay: 1.7, duration: 0.7 }}
           >
-            🍽️ মেনু দেখুন
-          </motion.button>
+            {stats.map((s, i) => (
+              <motion.div
+                key={i}
+                className="hero-stat-pill"
+                whileHover={{ scale: 1.07, y: -2 }}
+                transition={{ type: "spring", stiffness: 400 }}
+              >
+                <span className="hero-stat-value">{s.value}</span>
+                <span className="hero-stat-label">{s.label}</span>
+              </motion.div>
+            ))}
+          </motion.div>
 
+          {/* CTA buttons */}
+          <motion.div
+            className="hero-cta-row"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.9, duration: 0.7 }}
+          >
+            <motion.button
+              id="hero-menu-cta"
+              className="btn-primary hero-cta-primary"
+              onClick={scrollToMenu}
+              whileHover={{ scale: 1.06, boxShadow: "0 0 40px rgba(255,107,53,0.55)" }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🍽️ মেনু দেখুন
+            </motion.button>
 
+            <motion.button
+              id="hero-scroll-cta"
+              className="hero-cta-ghost"
+              onClick={scrollToMenu}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              আরও জানুন ↓
+            </motion.button>
+          </motion.div>
         </motion.div>
 
-        {/* New Video Section - EXTRACTED FROM WRAPPER */}
-        <div className="w-full flex justify-center items-center mt-12 sm:mt-24 mb-10 sm:mb-12 pointer-events-auto px-4 z-10 relative">
+        {/* ── Video card ── */}
+        <motion.div
+          className="hero-video-wrap"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2.0, duration: 0.9 }}
+        >
+          {/* glow halo */}
+          <div className="hero-video-glow" aria-hidden="true" />
+
+          {/* spinning border */}
+          <div className="hero-video-card">
+            <motion.div
+              className="hero-video-border-spin"
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
+              aria-hidden="true"
+            />
+            <div className="hero-video-inner-mask" aria-hidden="true" />
+
+            {/* Loading shimmer */}
+            <AnimatePresence>
+              {!videoReady && (
+                <motion.div
+                  className="hero-video-skeleton"
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4 }}
+                  aria-hidden="true"
+                >
+                  <div className="hero-video-skeleton-shimmer" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <video
+              src="/pohela_boishak.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              onCanPlay={() => setVideoReady(true)}
+              className="hero-video"
+              aria-label="পহেলা বৈশাখ উৎসবের ভিডিও"
+            />
+          </div>
+
+          {/* video label badge */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.8, duration: 0.8 }}
-            className="w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl mx-auto relative group"
+            className="hero-video-badge"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 2.5, duration: 0.6 }}
           >
-            {/* Background Glow acting like playing from top */}
-            <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-[2rem] sm:rounded-[2.5rem] opacity-70 blur-2xl group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
-
-            {/* Animated Border Container */}
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-[3px] sm:p-[4px] bg-[#0a0a1a]">
-
-              {/* Rotating glowing border beam */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250%] aspect-square bg-[conic-gradient(from_0deg,transparent_0_280deg,#f59e0b_360deg)] z-0"
-              />
-
-              {/* Solid inner background to mask the rotating beam */}
-              <div className="absolute inset-[3px] sm:inset-[4px] bg-[#0a0a1a] rounded-[13px] sm:rounded-[20px] z-0" />
-
-              <video
-                src="/pohela_boishak.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                className="relative z-10 w-full aspect-[4/3] sm:aspect-video object-cover rounded-[13px] sm:rounded-[20px] shadow-2xl"
-              />
-            </div>
+            <span className="hero-video-badge-dot" />
+            LIVE উৎসব
           </motion.div>
-        </div>
+        </motion.div>
       </div>
 
+      {/* ── Scroll indicator ── */}
       <motion.div
+        className="hero-scroll-indicator"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2.5, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        transition={{ delay: 3, duration: 1 }}
+        onClick={scrollToMenu}
+        role="button"
+        aria-label="নিচে স্ক্রোল করুন"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && scrollToMenu()}
       >
         <motion.div
+          className="hero-scroll-mouse"
           animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 rounded-full border-2 border-amber-500/30 flex items-start justify-center p-1.5"
+          transition={{ duration: 1.6, repeat: Infinity }}
         >
-          <div className="w-1.5 h-3 rounded-full bg-amber-500/50" />
+          <div className="hero-scroll-wheel" />
         </motion.div>
+        <p className="hero-scroll-label">স্ক্রোল করুন</p>
       </motion.div>
-    </div>
+
+      {/* ── Bottom fade ── */}
+      <div className="hero-bottom-fade" aria-hidden="true" />
+    </section>
   );
 }
