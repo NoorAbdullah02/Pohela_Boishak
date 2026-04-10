@@ -131,13 +131,13 @@ function StatCard({ label, value, icon, accentColor, delay }) {
           width: 52,
           height: 52,
           borderRadius: "50%",
-          background: `rgba(${accentColor.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.12)`,
+          background: `rgba(${accentColor.replace('#', '').match(/.{2}/g).map(x => parseInt(x, 16)).join(',')},0.12)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: 24,
           flexShrink: 0,
-          border: `1px solid rgba(${accentColor.replace('#','').match(/.{2}/g).map(x=>parseInt(x,16)).join(',')},0.2)`,
+          border: `1px solid rgba(${accentColor.replace('#', '').match(/.{2}/g).map(x => parseInt(x, 16)).join(',')},0.2)`,
         }}>
           {icon}
         </div>
@@ -328,7 +328,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const stored = localStorage.getItem("adminUser");
     const token = getAccessToken();
-    if (!stored && !token) { router.push("/admin/login"); return; }
+    if (!stored && !token) { router.push("/admin/dashboard"); return; }
     if (stored) setUser(JSON.parse(stored));
     checkAuth();
   }, []);
@@ -404,7 +404,7 @@ export default function AdminDashboard() {
   }, [silentPoll]);
 
   const handleLogout = async () => {
-    try { await authAPI.logout(); } catch {}
+    try { await authAPI.logout(); } catch { }
     setAccessToken(null);
     localStorage.removeItem("adminUser");
     router.push("/admin/login");
@@ -573,14 +573,13 @@ export default function AdminDashboard() {
               zIndex: 9999,
               background:
                 toast.type === "error" ? "rgba(220,38,38,0.97)" :
-                toast.type === "new"   ? "rgba(245,158,11,0.97)" :
-                "rgba(16,185,129,0.97)",
+                  toast.type === "new" ? "rgba(245,158,11,0.97)" :
+                    "rgba(16,185,129,0.97)",
               backdropFilter: "blur(20px)",
-              border: `1px solid ${
-                toast.type === "error" ? "rgba(220,38,38,0.5)" :
-                toast.type === "new"   ? "rgba(245,158,11,0.5)" :
-                "rgba(16,185,129,0.5)"
-              }`,
+              border: `1px solid ${toast.type === "error" ? "rgba(220,38,38,0.5)" :
+                toast.type === "new" ? "rgba(245,158,11,0.5)" :
+                  "rgba(16,185,129,0.5)"
+                }`,
               borderRadius: 100,
               padding: "12px 24px",
               color: "#fff",
@@ -618,7 +617,7 @@ export default function AdminDashboard() {
               transition={{ duration: 3, repeat: Infinity }}
               style={{ width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #F59E0B, #DC2626)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}
             >
-              <img src="/images/depLogo.png" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
+              <img src="/images/depLogo.webp" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
             </motion.div>
             <div>
               <h1 style={{ fontSize: 18, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: "-0.3px" }}>অ্যাডমিন প্যানেল</h1>
@@ -697,10 +696,10 @@ export default function AdminDashboard() {
         {/* ─ Stats Row ─ */}
         {stats && (
           <div style={{ display: "flex", gap: 14, marginBottom: 32, flexWrap: "wrap" }}>
-            <StatCard label="মোট অর্ডার"  value={stats.totalOrders}              icon="📦" accentColor="#3B82F6" delay={0.05} />
-            <StatCard label="আজকের অর্ডার" value={stats.todayOrders}             icon="📅" accentColor="#10B981" delay={0.1}  />
-            <StatCard label="অপেক্ষমান"    value={stats.pendingOrders}           icon="⏳" accentColor="#F59E0B" delay={0.15} />
-            <StatCard label="মোট আয়"      value={`৳${Math.round(stats.totalRevenue)}`} icon="💰" accentColor="#A855F7" delay={0.2}  />
+            <StatCard label="মোট অর্ডার" value={stats.totalOrders} icon="📦" accentColor="#3B82F6" delay={0.05} />
+            <StatCard label="আজকের অর্ডার" value={stats.todayOrders} icon="📅" accentColor="#10B981" delay={0.1} />
+            <StatCard label="অপেক্ষমান" value={stats.pendingOrders} icon="⏳" accentColor="#F59E0B" delay={0.15} />
+            <StatCard label="মোট আয়" value={`৳${Math.round(stats.totalRevenue)}`} icon="💰" accentColor="#A855F7" delay={0.2} />
           </div>
         )}
 
@@ -708,7 +707,7 @@ export default function AdminDashboard() {
         <div style={{ display: "flex", gap: 10, marginBottom: 28, flexWrap: "wrap" }}>
           {[
             { key: "orders", label: "অর্ডার ম্যানেজমেন্ট", icon: "📦" },
-            { key: "menu",   label: "মেনু ম্যানেজমেন্ট",   icon: "🍽️" },
+            { key: "menu", label: "মেনু ম্যানেজমেন্ট", icon: "🍽️" },
           ].map((tab) => (
             <motion.button
               key={tab.key}

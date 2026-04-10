@@ -28,7 +28,7 @@ export default function Navbar() {
   const links = [
     { label: "মেনু", href: "#menu" },
     { label: "আমাদের সম্পর্কে", href: "#about" },
-    { label: "অ্যাডমিন", href: "/admin/login" },
+    { label: "অ্যাডমিন", href: "/admin/dashboard" },
   ];
 
   return (
@@ -69,7 +69,7 @@ export default function Navbar() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-br from-[#ff6b35] to-[#fcbf49] rounded-full blur-md opacity-60 group-hover:opacity-100 transition-opacity" />
               <div className="relative bg-white/5 p-0.5 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-[#ff6b35]/30 overflow-hidden shadow-inner">
-                <img src="/images/depLogo.png" alt="ICE Department Logo" className="w-full h-full object-contain rounded-full drop-shadow-md" />
+                <img src="/images/depLogo.webp" alt="ICE Department Logo" className="w-full h-full object-contain rounded-full drop-shadow-md" />
               </div>
             </div>
             <div className="flex flex-col leading-none sm:leading-tight">

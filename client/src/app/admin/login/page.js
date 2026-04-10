@@ -45,8 +45,8 @@ export default function AdminLogin() {
           {/* large ambient orbs */}
           {[
             { w: 700, h: 700, x: "-15%", y: "-20%", c: "rgba(245,158,11,0.07)", d: 20 },
-            { w: 600, h: 600, x: "60%",  y: "30%",  c: "rgba(220,38,38,0.06)",   d: 25 },
-            { w: 400, h: 400, x: "20%",  y: "60%",  c: "rgba(245,158,11,0.05)", d: 18 },
+            { w: 600, h: 600, x: "60%", y: "30%", c: "rgba(220,38,38,0.06)", d: 25 },
+            { w: 400, h: 400, x: "20%", y: "60%", c: "rgba(245,158,11,0.05)", d: 18 },
           ].map((o, i) => (
             <motion.div
               key={i}
@@ -146,7 +146,7 @@ export default function AdminLogin() {
                 marginBottom: 32,
               }}
             >
-              <img src="/images/depLogo.png" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
+              <img src="/images/depLogo.webp" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
             </motion.div>
 
             <motion.h2
@@ -237,7 +237,7 @@ export default function AdminLogin() {
                 marginBottom: 16,
               }}
             >
-              <img src="/images/depLogo.png" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
+              <img src="/images/depLogo.webp" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: "50%" }} />
             </motion.div>
             <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, letterSpacing: "0.2em" }}>POHELA BOISHAKH · ADMIN</p>
           </div>
