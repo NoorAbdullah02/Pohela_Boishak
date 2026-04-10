@@ -20,10 +20,10 @@ export default function CategoryTabs({ activeCategory, setActiveCategory, items 
       transition={{ duration: 0.5 }}
       className="relative z-20 mb-6 sm:mb-8 md:mb-12 lg:mb-16"
     >
-      <div className="relative mx-auto px-3 sm:px-4 md:px-6">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10">
         {/* Glass container for tabs */}
         <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl md:rounded-3xl p-2 sm:p-3 md:p-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-          <div className="flex overflow-x-auto hide-scrollbar items-center justify-center gap-1.5 sm:gap-2 md:gap-3 w-fit mx-auto px-1">
+          <div className="flex overflow-x-auto hide-scrollbar items-center justify-center gap-1.5 sm:gap-2 md:gap-3 px-1">
             {categories.map((cat) => {
               const count =
                 cat === "সব"
