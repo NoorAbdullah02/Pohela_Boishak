@@ -261,7 +261,7 @@ function Scene() {
 
 export default function HeroScene() {
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden pt-28 pb-10 sm:py-32" id="hero">
+    <div className="relative w-full h-auto sm:min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 pb-20 sm:pt-32 sm:pb-32" id="hero">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0a0a1a] z-[5] pointer-events-none" />
 
       <div className="absolute inset-0 z-0">
@@ -356,24 +356,27 @@ export default function HeroScene() {
           </motion.button>
 
 
-          {/* New Video Section */}
+        </motion.div>
+
+        {/* New Video Section - EXTRACTED FROM WRAPPER */}
+        <div className="w-full flex justify-center items-center mt-12 sm:mt-24 mb-10 sm:mb-12 pointer-events-auto px-4 z-10 relative">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.8, duration: 0.8 }}
-            className="mt-24 mb-2 sm:mt-32 sm:mb-8 w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl mx-auto relative group pointer-events-auto"
+            className="w-full sm:max-w-xl md:max-w-3xl lg:max-w-5xl mx-auto relative group"
           >
             {/* Background Glow acting like playing from top */}
             <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-amber-500/20 rounded-[2rem] sm:rounded-[2.5rem] opacity-70 blur-2xl group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
 
             {/* Animated Border Container */}
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-[3px] sm:p-[4px]">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.5)] p-[3px] sm:p-[4px] bg-[#0a0a1a]">
 
               {/* Rotating glowing border beam */}
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] aspect-square bg-[conic-gradient(from_0deg,transparent_0_280deg,#f59e0b_360deg)] z-0"
+                transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250%] aspect-square bg-[conic-gradient(from_0deg,transparent_0_280deg,#f59e0b_360deg)] z-0"
               />
 
               {/* Solid inner background to mask the rotating beam */}
@@ -385,11 +388,11 @@ export default function HeroScene() {
                 muted
                 loop
                 playsInline
-                className="relative z-10 w-full h-full max-h-[60vh] sm:max-h-[70vh] object-cover rounded-[13px] sm:rounded-[20px]"
+                className="relative z-10 w-full aspect-[4/3] sm:aspect-video object-cover rounded-[13px] sm:rounded-[20px] shadow-2xl"
               />
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
 
       <motion.div
