@@ -22,7 +22,7 @@ export const initDatabase = async () => {
     );
     if (dbCheck.rows.length === 0) {
       await rootClient.query('CREATE DATABASE pohela_boishakh');
-      console.log('✅ ডাটাবেজ "pohela_boishakh" তৈরি হয়েছে');
+      console.log('ডাটাবেজ "pohela_boishakh" তৈরি হয়েছে');
     }
   } catch (err) {
     console.error('ডাটাবেজ তৈরি করতে সমস্যা:', err.message);
