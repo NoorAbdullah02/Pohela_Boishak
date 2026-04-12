@@ -9,20 +9,19 @@ export default function Footer() {
     const footerLinks = {
         দ্রুত_লিঙ্ক: [
             { label: "মেনু", href: "#menu" },
-            { label: "আমাদের সম্পর্কে", href: "#about" },
-            { label: "যোগাযোগ করুন", href: "#contact" },
+            { label: "আমাদের সম্পর্কে", href: "https://www.facebook.com/bauet.ice" },
+            { label: "যোগাযোগ করুন", href: "https://www.facebook.com/raziya.rikta.9" },
             { label: "অ্যাডমিন প্যানেল", href: "/admin/login" },
         ],
         সোশ্যাল_মিডিয়া: [
-            { label: "ফেসবুক", href: "https://facebook.com", icon: "f" },
-            { label: "ইনস্টাগ্রাম", href: "https://instagram.com", icon: "📸" },
-            { label: "হোয়াটসঅ্যাপ", href: "https://wa.me", icon: "💬" },
+            { icon: "f", label: "Facebook", href: "https://www.facebook.com/bauet.ice" },
+            { icon: "📸", label: "Instagram", href: "https://www.instagram.com/bauet.ice" },
+            { icon: "💬", label: "WhatsApp", href: "https://wa.me/8801748269350" },
         ],
     };
 
     return (
         <footer className="relative bg-slate-950/90 border-t border-white/10 backdrop-blur-lg mt-20 sm:mt-28 md:mt-36">
-            {/* Background decoration */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div
                     className="absolute -bottom-1/2 -left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-gradient-to-t from-amber-600/10 to-transparent rounded-full blur-2xl"
@@ -33,9 +32,7 @@ export default function Footer() {
             </div>
 
             <div className="relative z-10 w-full max-w-[2000px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20">
-                {/* Main Footer Content */}
                 <div className="py-12 sm:py-16 md:py-20 grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
-                    {/* Brand Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -88,7 +85,6 @@ export default function Footer() {
                         </div>
                     </motion.div>
 
-                    {/* Contact Info */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -104,7 +100,7 @@ export default function Footer() {
                                 <span className="text-amber-400 text-base sm:text-lg flex-shrink-0">📍</span>
                                 <div className="flex-1">
                                     <p className="text-gray-400 text-xs sm:text-sm leading-snug">
-                                        ICE Department, University Campus
+                                        ICE Department, BAUET Campus
                                     </p>
                                 </div>
                             </div>
@@ -114,23 +110,23 @@ export default function Footer() {
                                     href="mailto:info@pohela-boishak.com"
                                     className="text-gray-400 hover:text-amber-400 transition-colors text-xs sm:text-sm truncate"
                                 >
-                                    info@pohela-boishak.com
+                                    ice@pohela-boishak.com
                                 </a>
                             </div>
                             <div className="flex items-center gap-2 sm:gap-3 group">
                                 <span className="text-amber-400 text-base sm:text-lg flex-shrink-0">📱</span>
                                 <a
-                                    href="tel:+8801234567890"
+                                    href="tel:+8801707533471"
                                     className="text-gray-400 hover:text-amber-400 transition-colors text-xs sm:text-sm"
                                 >
-                                    +880 1234 567 890
+                                    +8801707533471
                                 </a>
                             </div>
                         </div>
                     </motion.div>
                 </div>
 
-                {/* Social Links */}
+
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -142,9 +138,9 @@ export default function Footer() {
                         <span className="text-xs sm:text-sm text-gray-500">আমাদের অনুসরণ করুন:</span>
                         <div className="flex items-center gap-3 sm:gap-4">
                             {[
-                                { icon: "f", label: "Facebook", href: "https://facebook.com" },
-                                { icon: "📸", label: "Instagram", href: "https://instagram.com" },
-                                { icon: "💬", label: "WhatsApp", href: "https://wa.me" },
+                                { icon: "f", label: "Facebook", href: "https://www.facebook.com/bauet.ice" },
+                                { icon: "📸", label: "Instagram", href: "https://www.instagram.com/bauet.ice" },
+                                { icon: "💬", label: "WhatsApp", href: "https://wa.me/8801234567890" },
                             ].map((social, idx) => (
                                 <motion.a
                                     key={idx}
@@ -163,7 +159,7 @@ export default function Footer() {
                     </div>
                 </motion.div>
 
-                {/* Bottom Bar */}
+                
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
@@ -172,7 +168,7 @@ export default function Footer() {
                     className="py-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4"
                 >
                     <p className="text-gray-500 text-sm text-center sm:text-left">
-                        © {currentYear} শুভ নববর্ষ - ICE Department. সর্বাধিকার সংরক্ষিত।
+                        © {currentYear} শুভ নববর্ষ - ICE Department.
                     </p>
                     <div className="flex items-center gap-6">
                         <a

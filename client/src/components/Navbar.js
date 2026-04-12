@@ -27,7 +27,7 @@ export default function Navbar() {
 
   const links = [
     { label: "মেনু", href: "#menu" },
-    { label: "আমাদের সম্পর্কে", href: "#about" },
+    { label: "আমাদের সম্পর্কে", href: "https://www.facebook.com/bauet.ice" },
     { label: "অ্যাডমিন", href: "/admin/login" },
   ];
 

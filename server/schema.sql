@@ -5,7 +5,7 @@ CREATE DATABASE pohela_boishakh;
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TYPE item_category AS ENUM ('খাবার', 'জুস', 'কম্বো', 'অন্যান্য');
+CREATE TYPE item_category AS ENUM ('খাবার', 'জুস', 'জুয়েলারি', 'কম্বো', 'অন্যান্য');
 CREATE TYPE payment_method AS ENUM ('ক্যাশ', 'অনলাইন');
 CREATE TYPE order_status AS ENUM ('অপেক্ষমান', 'নিশ্চিত', 'সম্পন্ন', 'বাতিল');
 

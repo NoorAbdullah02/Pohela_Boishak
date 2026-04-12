@@ -39,7 +39,7 @@ export const initDatabase = async () => {
 
     await pool.query(`
       DO $$ BEGIN
-        CREATE TYPE item_category AS ENUM ('খাবার', 'জুস', 'কম্বো', 'অন্যান্য');
+        CREATE TYPE item_category AS ENUM ('খাবার', 'জুস', 'জুয়েলারি', 'কম্বো', 'অন্যান্য');
       EXCEPTION WHEN duplicate_object THEN null;
       END $$
     `);
@@ -87,7 +87,7 @@ export const initDatabase = async () => {
       )
     `);
 
-      await pool.query(`
+    await pool.query(`
         CREATE TABLE IF NOT EXISTS orders (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           order_number SERIAL,
@@ -105,8 +105,8 @@ export const initDatabase = async () => {
         )
       `);
 
-      // Ensure customer_phone exists if table was already created
-      await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone VARCHAR(50)`);
+    // Ensure customer_phone exists if table was already created
+    await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone VARCHAR(50)`);
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -134,7 +134,7 @@ export const initDatabase = async () => {
     `);
 
     const createIndexSafe = async (name, sql) => {
-      try { await pool.query(sql); } catch (e) {}
+      try { await pool.query(sql); } catch (e) { }
     };
 
     await createIndexSafe('idx_food_category', 'CREATE INDEX IF NOT EXISTS idx_food_items_category ON food_items(category)');
@@ -161,7 +161,7 @@ export const initDatabase = async () => {
           BEFORE UPDATE ON ${table}
           FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
         `);
-      } catch (e) {}
+      } catch (e) { }
     };
 
     await createTriggerSafe('update_users_updated_at', 'users');
@@ -173,7 +173,7 @@ export const initDatabase = async () => {
       const adminEmail = process.env.ADMIN_EMAIL || 'admin@yoursite.com';
       const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
       const hashedPassword = await bcrypt.hash(adminPassword, 12);
-      
+
       await pool.query(
         'INSERT INTO users (name, email, password_hash, role) VALUES ($1, $2, $3, $4)',
         ['অ্যাডমিন', adminEmail, hashedPassword, 'admin']

@@ -230,10 +230,10 @@ export default function CheckoutModal({ isOpen, onClose }) {
 
   // Cohesive warm dark palette — saffron + crimson + emerald
   const ACCENT = {
-    amber:   "#F59E0B",  // primary — saffron
+    amber: "#F59E0B",  // primary — saffron
     crimson: "#E11D48",  // secondary — deep rose
     emerald: "#10B981",  // success / free delivery
-    muted:   "rgba(255,255,255,0.5)",
+    muted: "rgba(255,255,255,0.5)",
   };
 
   return (
@@ -588,8 +588,8 @@ export default function CheckoutModal({ isOpen, onClose }) {
                           <SectionHeader icon="💳" label="পেমেন্ট পদ্ধতি" color={ACCENT.crimson} />
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                             {[
-                              { id: "ক্যাশ",   emoji: "💵", label: "ক্যাশ",   sub: "স্টলে সরাসরি",   color: ACCENT.amber   },
-                              { id: "অনলাইন", emoji: "📱", label: "অনলাইন", sub: "বিকাশ / নগদ",    color: ACCENT.crimson },
+                              { id: "ক্যাশ", emoji: "💵", label: "ক্যাশ", sub: "স্টলে সরাসরি", color: ACCENT.amber },
+                              { id: "অনলাইন", emoji: "📱", label: "অনলাইন", sub: "বিকাশ / নগদ", color: ACCENT.crimson },
                             ].map((m) => {
                               const isSelected = paymentMethod === m.id;
                               return (
@@ -653,8 +653,8 @@ export default function CheckoutModal({ isOpen, onClose }) {
                               >
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                                   {[
-                                    { label: "bKash", number: "01748269350", color: "#E2136E", emoji: "💎" },
-                                    { label: "Nagad",  number: "01748269350", color: "#F7941D", emoji: "🔥" },
+                                    { label: "bKash", number: "01795988930", color: "#E2136E", emoji: "💎" },
+                                    { label: "Nagad", number: "01795988930", color: "#F7941D", emoji: "🔥" },
                                   ].map((p) => (
                                     <div
                                       key={p.label}
