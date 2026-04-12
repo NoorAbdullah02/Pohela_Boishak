@@ -26,7 +26,7 @@ export default function CartDrawer() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* ── Backdrop ── */}
+            
             <motion.div
               key="cart-backdrop"
               className="cart-backdrop"
@@ -37,7 +37,7 @@ export default function CartDrawer() {
               onClick={closeCart}
             />
 
-            {/* ── Drawer ── */}
+            
             <motion.div
               key="cart-drawer"
               className="cart-drawer"
@@ -46,10 +46,9 @@ export default function CartDrawer() {
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 280 }}
             >
-              {/* Mesh bg */}
+             
               <div className="cart-drawer__mesh" aria-hidden="true" />
 
-              {/* ── HEADER ── */}
               <motion.div
                 className="cart-header"
                 initial={{ opacity: 0, y: -16 }}

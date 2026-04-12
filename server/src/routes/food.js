@@ -20,17 +20,16 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'pohela_boishakh/food',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'svg', 'tiff', 'ico', 'heic', 'heif'],
   },
 });
 
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 15 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-    const ext = extname(file.originalname).toLowerCase();
-    if (allowed.includes(ext)) {
+    // Accept all image MIME types
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
       cb(new Error('শুধুমাত্র ছবি ফাইল গ্রহণযোগ্য।'));
